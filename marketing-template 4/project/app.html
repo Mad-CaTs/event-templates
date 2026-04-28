@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reserva tu fecha — Salón de Eventos</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="shared-data.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--noir:#0F0C09;--gold:#ffbb00;--gold-l:#ffc933;--champagne:#E8D09A;--cream:#FAF4E8;--ivory:#FFF9F0;--stone:#8B7B68;--stone-l:#B8A898;--ff-d:'Cormorant Garamond',serif;--ff-b:'Jost',sans-serif}
+body{font-family:var(--ff-b);background:var(--ivory);color:var(--noir);min-height:100vh}
+/* NAV */
+nav{background:var(--noir);padding:18px 48px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{font-family:var(--ff-d);font-size:22px;font-weight:300;letter-spacing:.18em;color:var(--champagne);text-transform:uppercase;text-decoration:none}
+.nav-back{font-family:var(--ff-b);font-size:11px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--stone-l);text-decoration:none;display:flex;align-items:center;gap:8px;transition:color .2s}
+.nav-back:hover{color:var(--gold)}
+/* PAGE */
+.page{max-width:1100px;margin:0 auto;padding:64px 48px 120px}
+.page-title{font-family:var(--ff-d);font-size:52px;font-weight:300;color:var(--noir);margin-bottom:8px}
+.page-title em{font-style:italic;color:var(--gold)}
+.page-sub{font-family:var(--ff-b);font-size:14px;font-weight:300;color:var(--stone);margin-bottom:56px}
+/* LEGEND */
+.legend{display:flex;gap:24px;margin-bottom:32px;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:400;color:var(--stone)}
+.legend-dot{width:12px;height:12px;border-radius:50%}
+.dot-available{background:#4caf7d}.dot-pending{background:#f5a623}.dot-reserved{background:#e05555}
+/* CALENDAR */
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.cal-month{font-family:var(--ff-d);font-size:28px;font-weight:300;color:var(--noir)}
+.cal-btn{background:none;border:1px solid rgba(0,0,0,.1);width:36px;height:36px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;color:var(--stone);transition:border-color .2s,color .2s}
+.cal-btn:hover{border-color:var(--gold);color:var(--gold)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal-header{text-align:center;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--stone);padding:8px 0}
+.cal-day{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;border:1px solid transparent;transition:all .2s;position:relative;border-radius:2px}
+.cal-day.empty{cursor:default}
+.cal-day.available{background:rgba(76,175,125,.08);border-color:rgba(76,175,125,.2)}
+.cal-day.available:hover{background:rgba(76,175,125,.2);border-color:#4caf7d;transform:scale(1.05)}
+.cal-day.pending{background:rgba(245,166,35,.1);border-color:rgba(245,166,35,.3);cursor:default}
+.cal-day.reserved{background:rgba(224,85,85,.08);border-color:rgba(224,85,85,.2);cursor:default}
+.cal-day.past{opacity:.35;cursor:default}
+.cal-day.today .cal-num{font-weight:600;color:var(--gold)}
+.cal-num{font-family:var(--ff-b);font-size:15px;font-weight:300;color:var(--noir)}
+.cal-day.available .cal-num{color:#2a7a4a}
+.cal-day.pending .cal-num{color:#c07a0a}
+.cal-day.reserved .cal-num{color:#a03333}
+.cal-status-dot{width:6px;height:6px;border-radius:50%;margin-top:4px}
+.cal-day.available .cal-status-dot{background:#4caf7d}
+.cal-day.pending .cal-status-dot{background:#f5a623}
+.cal-day.reserved .cal-status-dot{background:#e05555}
+/* MODAL OVERLAY */
+.overlay{position:fixed;inset:0;background:rgba(10,8,5,.85);backdrop-filter:blur(6px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px}
+.modal{background:var(--ivory);width:100%;max-width:680px;max-height:90vh;overflow-y:auto;position:relative}
+.modal-header{background:var(--noir);padding:32px 40px 28px;position:sticky;top:0;z-index:10}
+.modal-eyebrow{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.modal-title{font-family:var(--ff-d);font-size:30px;font-weight:300;color:var(--champagne)}
+.modal-close{position:absolute;top:24px;right:28px;background:none;border:1px solid rgba(255,187,0,.3);color:var(--champagne);width:36px;height:36px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center}
+.modal-close:hover{border-color:var(--gold);color:var(--gold)}
+.modal-body{padding:36px 40px}
+/* STEPPER */
+.stepper{display:flex;gap:0;margin-bottom:36px}
+.step{flex:1;display:flex;align-items:center}
+.step-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0;border:2px solid rgba(0,0,0,.1);color:var(--stone);background:white;transition:all .3s}
+.step.active .step-num{background:var(--gold);border-color:var(--gold);color:var(--noir)}
+.step.done .step-num{background:var(--noir);border-color:var(--noir);color:var(--gold)}
+.step-label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--stone);margin-left:10px}
+.step.active .step-label{color:var(--noir);font-weight:600}
+.step-line{flex:1;height:1px;background:rgba(0,0,0,.1);margin:0 12px}
+/* FORM ELEMENTS */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.form-label{font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--stone);font-weight:500}
+.form-input,.form-select,.form-textarea{font-family:var(--ff-b);font-size:14px;font-weight:300;color:var(--noir);background:white;border:1px solid rgba(0,0,0,.12);padding:13px 16px;outline:none;transition:border-color .2s;width:100%}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--gold)}
+.form-textarea{resize:vertical;min-height:80px}
+/* OPTIONS */
+.opt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.opt-btn{padding:10px 6px;border:1px solid rgba(0,0,0,.1);background:white;cursor:pointer;font-family:var(--ff-b);font-size:12px;font-weight:400;color:var(--stone);text-align:center;transition:all .2s}
+.opt-btn.active{border-color:var(--gold);background:var(--noir);color:var(--champagne)}
+.opt-btn:hover:not(.active){border-color:rgba(255,187,0,.4)}
+/* SLIDER */
+.slider-val{font-family:var(--ff-d);font-size:36px;font-weight:300;color:var(--gold)}
+.slider{width:100%;appearance:none;height:2px;background:rgba(0,0,0,.1);outline:none;cursor:pointer;margin:12px 0 6px}
+.slider::-webkit-slider-thumb{appearance:none;width:20px;height:20px;border-radius:50%;background:var(--gold);border:2px solid white;box-shadow:0 0 0 2px var(--gold);cursor:pointer}
+.slider-range{display:flex;justify-content:space-between;font-size:10px;color:var(--stone-l)}
+/* SERVICES */
+.svc-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.svc-item{display:flex;align-items:center;gap:14px;padding:14px 16px;background:white;border:1px solid rgba(0,0,0,.08);cursor:pointer;transition:border-color .2s}
+.svc-item:hover{border-color:rgba(255,187,0,.4)}
+.svc-item.checked{border-color:var(--gold);background:rgba(255,187,0,.04)}
+.svc-cb{width:20px;height:20px;border:1px solid rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.svc-item.checked .svc-cb{background:var(--gold);border-color:var(--gold)}
+.svc-info{flex:1}.svc-name{font-size:14px;font-weight:400;color:var(--noir)}
+.svc-desc{font-size:12px;font-weight:300;color:var(--stone);margin-top:1px}
+.svc-price{font-size:13px;font-weight:500;color:var(--gold)}
+/* SUMMARY */
+.summary-box{background:var(--noir);padding:24px 28px;margin-bottom:20px}
+.summary-row{display:flex;justify-content:space-between;font-size:13px;font-weight:300;color:var(--stone-l);padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.summary-total{font-family:var(--ff-d);font-size:40px;font-weight:300;color:var(--gold);margin-top:16px}
+.summary-igv{font-size:11px;color:var(--stone-l);letter-spacing:.1em}
+/* PAYMENT */
+.pay-options{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.pay-opt{padding:20px 12px;border:1px solid rgba(0,0,0,.1);background:white;cursor:pointer;text-align:center;transition:all .2s}
+.pay-opt:hover{border-color:rgba(255,187,0,.4)}
+.pay-opt.active{border-color:var(--gold);background:var(--noir)}
+.pay-icon{font-size:28px;display:block;margin-bottom:8px}
+.pay-name{font-size:13px;font-weight:500;color:var(--stone)}
+.pay-opt.active .pay-name{color:var(--champagne)}
+.qr-box{background:white;padding:24px;text-align:center;border:1px solid rgba(0,0,0,.08);margin-bottom:20px}
+.qr-placeholder{width:160px;height:160px;margin:0 auto 12px;background:linear-gradient(135deg,#f0f0f0,#e0e0e0);display:flex;align-items:center;justify-content:center;font-size:12px;color:#999}
+/* SUCCESS */
+.success-screen{text-align:center;padding:20px 0 40px}
+.success-icon{width:72px;height:72px;background:rgba(76,175,125,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:32px}
+.success-title{font-family:var(--ff-d);font-size:40px;font-weight:300;color:var(--noir);margin-bottom:8px}
+.success-code{display:inline-block;font-family:var(--ff-b);font-size:20px;font-weight:600;letter-spacing:.2em;color:var(--gold);background:var(--noir);padding:12px 32px;margin:20px 0}
+.success-detail{font-size:13px;font-weight:300;color:var(--stone);line-height:1.7;max-width:420px;margin:0 auto 32px}
+/* BTNs */
+.btn-primary{font-family:var(--ff-b);font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--noir);background:var(--gold);border:none;padding:16px 36px;cursor:pointer;transition:background .2s,transform .15s;width:100%}
+.btn-primary:hover{background:var(--gold-l);transform:translateY(-1px)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-ghost{font-family:var(--ff-b);font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--stone);background:transparent;border:1px solid rgba(0,0,0,.12);padding:16px 28px;cursor:pointer;transition:all .2s}
+.btn-ghost:hover{border-color:var(--gold);color:var(--noir)}
+.btn-row{display:flex;gap:12px;margin-top:24px}
+.divider{height:1px;background:rgba(0,0,0,.06);margin:20px 0}
+@media(max-width:640px){.page{padding:40px 20px 100px}.form-row{grid-template-columns:1fr}.opt-grid{grid-template-columns:repeat(2,1fr)}.pay-options{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="Landing Page.html" class="nav-logo">Salón de Eventos</a>
+  <a href="Landing Page.html" class="nav-back">← Volver al inicio</a>
+</nav>
+
+<div class="page">
+  <div id="root"></div>
+</div>
+
+<script type="text/babel">
+const { useState, useEffect, useMemo } = React;
+const DB = window.SalonDB;
+
+const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const DAYS   = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+const EVENT_TYPES = ['Boda','Corporativo','Quinceañero','Cóctel'];
+const TIMES = ['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00'];
+
+function Calendar({ onSelectDate }) {
+  const [cur, setCur] = useState(new Date());
+  const year = cur.getFullYear(), month = cur.getMonth();
+  const today = new Date().toISOString().slice(0,10);
+
+  const days = useMemo(() => {
+    const first = new Date(year, month, 1).getDay();
+    const total = new Date(year, month+1, 0).getDate();
+    const arr = [];
+    for(let i=0;i<first;i++) arr.push(null);
+    for(let d=1;d<=total;d++) arr.push(d);
+    return arr;
+  }, [year, month]);
+
+  const navigate = (dir) => {
+    const d = new Date(cur);
+    d.setMonth(d.getMonth()+dir);
+    setCur(d);
+  };
+
+  return (
+    <div>
+      <div className="cal-nav">
+        <button className="cal-btn" onClick={()=>navigate(-1)}>‹</button>
+        <div className="cal-month">{MONTHS[month]} {year}</div>
+        <button className="cal-btn" onClick={()=>navigate(1)}>›</button>
+      </div>
+      <div className="legend">
+        <div className="legend-item"><div className="legend-dot dot-available"></div>Disponible — click para reservar</div>
+        <div className="legend-item"><div className="legend-dot dot-pending"></div>Con consulta pendiente</div>
+        <div className="legend-item"><div className="legend-dot dot-reserved"></div>Reservado</div>
+      </div>
+      <div className="cal-grid">
+        {DAYS.map(d=><div key={d} className="cal-header">{d}</div>)}
+        {days.map((d,i)=>{
+          if(!d) return <div key={'e'+i} className="cal-day empty"></div>;
+          const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+          const status = DB.getDateStatus(dateStr);
+          const isPast = dateStr < today;
+          const isToday = dateStr === today;
+          const cls = `cal-day ${isPast?'past':status} ${isToday?'today':''}`;
+          return (
+            <div key={d} className={cls} onClick={()=>{ if(!isPast && status==='available') onSelectDate(dateStr); }}>
+              <span className="cal-num">{d}</span>
+              {!isPast && status!=='available' && <div className="cal-status-dot"></div>}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function Step1({ data, onChange, services }) {
+  return (
+    <div>
+      <div className="form-group">
+        <label className="form-label">Tipo de evento</label>
+        <div className="opt-grid">
+          {EVENT_TYPES.map(t=>(
+            <button key={t} className={`opt-btn ${data.eventType===t?'active':''}`} onClick={()=>onChange('eventType',t)}>{t}</button>
+          ))}
+        </div>
+      </div>
+      <div className="form-row">
+        <div className="form-group" style={{marginBottom:0}}>
+          <label className="form-label">Hora de inicio</label>
+          <select className="form-select" value={data.timeStart} onChange={e=>onChange('timeStart',e.target.value)}>
+            {TIMES.map(t=><option key={t}>{t}</option>)}
+          </select>
+        </div>
+        <div className="form-group" style={{marginBottom:0}}>
+          <label className="form-label">Hora de fin</label>
+          <select className="form-select" value={data.timeEnd} onChange={e=>onChange('timeEnd',e.target.value)}>
+            {TIMES.map(t=><option key={t}>{t}</option>)}
+          </select>
+        </div>
+      </div>
+      <div className="form-group" style={{marginTop:16}}>
+        <label className="form-label">Número de personas</label>
+        <div className="slider-val">{data.persons} personas</div>
+        <input type="range" className="slider" min={50} max={500} step={10} value={data.persons}
+          onChange={e=>onChange('persons',parseInt(e.target.value))} />
+        <div className="slider-range"><span>50 pax</span><span>500 pax</span></div>
+      </div>
+      <div className="form-group">
+        <label className="form-label">Servicios adicionales</label>
+        <div className="svc-list">
+          {services.filter(s=>s.active).map(s=>{
+            const checked = data.services.includes(s.id);
+            return (
+              <div key={s.id} className={`svc-item ${checked?'checked':''}`} onClick={()=>{
+                const sv = checked ? data.services.filter(x=>x!==s.id) : [...data.services,s.id];
+                onChange('services',sv);
+              }}>
+                <div className="svc-cb">{checked&&<span style={{color:'#0F0C09',fontSize:13,fontWeight:700}}>✓</span>}</div>
+                <div className="svc-info">
+                  <div className="svc-name">{s.icon} {s.name}</div>
+                  <div className="svc-desc">{s.desc}</div>
+                </div>
+                <div className="svc-price">{s.unit==='per_person'?`S/ ${s.price} × pax`:`S/ ${s.price.toLocaleString()}`}</div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Step2({ data, onChange, price, selectedDate }) {
+  return (
+    <div>
+      <div className="form-row">
+        <div className="form-group" style={{marginBottom:0}}>
+          <label className="form-label">Nombre completo</label>
+          <input className="form-input" value={data.clientName} onChange={e=>onChange('clientName',e.target.value)} placeholder="Tu nombre completo" />
+        </div>
+        <div className="form-group" style={{marginBottom:0}}>
+          <label className="form-label">DNI</label>
+          <input className="form-input" value={data.clientDNI} onChange={e=>onChange('clientDNI',e.target.value)} placeholder="12345678" maxLength={8} />
+        </div>
+      </div>
+      <div className="form-row" style={{marginTop:16}}>
+        <div className="form-group" style={{marginBottom:0}}>
+          <label className="form-label">Email</label>
+          <input className="form-input" type="email" value={data.clientEmail} onChange={e=>onChange('clientEmail',e.target.value)} placeholder="correo@email.com" />
+        </div>
+        <div className="form-group" style={{marginBottom:0}}>
+          <label className="form-label">Teléfono / WhatsApp</label>
+          <input className="form-input" value={data.clientPhone} onChange={e=>onChange('clientPhone',e.target.value)} placeholder="+51 999 999 999" />
+        </div>
+      </div>
+      <div className="divider" style={{marginTop:24}}></div>
+      <div className="summary-box">
+        <div style={{fontSize:10,letterSpacing:'.3em',textTransform:'uppercase',color:'var(--stone-l)',marginBottom:16}}>Resumen del evento</div>
+        <div className="summary-row"><span>Fecha</span><span style={{color:'var(--champagne)'}}>{selectedDate}</span></div>
+        <div className="summary-row"><span>Tipo</span><span style={{color:'var(--champagne)'}}>{data.eventType}</span></div>
+        <div className="summary-row"><span>Horario</span><span style={{color:'var(--champagne)'}}>{data.timeStart} – {data.timeEnd}</span></div>
+        <div className="summary-row"><span>Personas</span><span style={{color:'var(--champagne)'}}>{data.persons} pax</span></div>
+        <div className="summary-row"><span>Alquiler del salón</span><span style={{color:'var(--champagne)'}}>{DB.fmt(price.base)}</span></div>
+        {price.extras>0&&<div className="summary-row"><span>Servicios adicionales</span><span style={{color:'var(--champagne)'}}>{DB.fmt(price.extras)}</span></div>}
+        <div className="summary-row"><span>IGV (18%)</span><span style={{color:'var(--champagne)'}}>{DB.fmt(price.igv)}</span></div>
+        <div className="summary-total">{DB.fmt(price.total)}</div>
+        <div className="summary-igv">Total con IGV incluido</div>
+      </div>
+    </div>
+  );
+}
+
+function Step3({ data, onChange, price, onConfirm, confirming }) {
+  const methods = [{id:'yape',name:'Yape',icon:'💜'},{id:'plin',name:'Plin',icon:'💚'},{id:'tarjeta',name:'Tarjeta',icon:'💳'}];
+  return (
+    <div>
+      <div className="form-group">
+        <label className="form-label">Método de pago</label>
+        <div className="pay-options">
+          {methods.map(m=>(
+            <div key={m.id} className={`pay-opt ${data.paymentMethod===m.id?'active':''}`} onClick={()=>onChange('paymentMethod',m.id)}>
+              <span className="pay-icon">{m.icon}</span>
+              <div className="pay-name">{m.name}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      {(data.paymentMethod==='yape'||data.paymentMethod==='plin') && (
+        <div className="qr-box">
+          <div className="qr-placeholder">
+            <div style={{textAlign:'center'}}><div style={{fontSize:32,marginBottom:8}}>📱</div><div style={{fontSize:11,color:'#aaa'}}>QR {data.paymentMethod==='yape'?'Yape':'Plin'}<br/>+51 999 999 999</div></div>
+          </div>
+          <div style={{fontSize:12,color:'var(--stone)',marginBottom:4}}>Monto a pagar:</div>
+          <div style={{fontFamily:'var(--ff-d)',fontSize:28,fontWeight:300,color:'var(--gold)'}}>{DB.fmt(price.total)}</div>
+          <div style={{fontSize:11,color:'var(--stone)',marginTop:8}}>Escanea el QR con tu app y envía el comprobante por WhatsApp</div>
+        </div>
+      )}
+      {data.paymentMethod==='tarjeta' && (
+        <div style={{marginBottom:20}}>
+          <div className="form-group">
+            <label className="form-label">Número de tarjeta</label>
+            <input className="form-input" placeholder="4242 4242 4242 4242" maxLength={19} />
+          </div>
+          <div className="form-row">
+            <div className="form-group" style={{marginBottom:0}}>
+              <label className="form-label">Vencimiento</label>
+              <input className="form-input" placeholder="MM/AA" maxLength={5} />
+            </div>
+            <div className="form-group" style={{marginBottom:0}}>
+              <label className="form-label">CVV</label>
+              <input className="form-input" placeholder="123" maxLength={3} />
+            </div>
+          </div>
+        </div>
+      )}
+      <div style={{background:'rgba(255,187,0,.06)',border:'1px solid rgba(255,187,0,.2)',padding:'14px 18px',fontSize:12,color:'var(--stone)',lineHeight:1.6,marginBottom:20}}>
+        Al confirmar, nuestro equipo revisará tu solicitud y te contactará en menos de 24 horas para coordinar los detalles finales.
+      </div>
+      <button className="btn-primary" onClick={onConfirm} disabled={confirming}>
+        {confirming ? 'Confirmando...' : `Confirmar reserva — ${DB.fmt(price.total)}`}
+      </button>
+    </div>
+  );
+}
+
+function SuccessScreen({ code, data, price, onClose }) {
+  return (
+    <div className="success-screen">
+      <div className="success-icon">✓</div>
+      <div className="success-title">¡Reserva enviada!</div>
+      <div style={{fontSize:13,color:'var(--stone)',marginBottom:12}}>Tu código de reserva es:</div>
+      <div className="success-code">{code}</div>
+      <div className="success-detail">
+        Hemos registrado tu reserva para el <strong>{data.date}</strong> ({data.eventType}, {data.persons} personas).<br/>
+        Un coordinador se comunicará con <strong>{data.clientName}</strong> al {data.clientPhone} en menos de 24 horas.
+      </div>
+      <div style={{background:'rgba(76,175,125,.08)',border:'1px solid rgba(76,175,125,.2)',padding:'16px 20px',fontSize:13,color:'var(--stone)',marginBottom:28,textAlign:'left',maxWidth:400,margin:'0 auto 28px'}}>
+        <div style={{fontWeight:600,marginBottom:8,color:'#2a7a4a'}}>Resumen</div>
+        <div>📅 {data.date} · {data.timeStart}–{data.timeEnd}</div>
+        <div>👥 {data.persons} personas</div>
+        <div>💰 {DB.fmt(price.total)} (incluye IGV)</div>
+        <div>💳 Pago: {data.paymentMethod}</div>
+      </div>
+      <div style={{display:'flex',gap:12,justifyContent:'center'}}>
+        <button className="btn-primary" style={{width:'auto'}} onClick={onClose}>Volver al calendario</button>
+        <a href={`https://wa.me/${DB.getConfig().whatsapp}?text=Hola, mi código de reserva es ${code}`} target="_blank"
+          style={{display:'inline-flex',alignItems:'center',gap:8,padding:'16px 24px',background:'#25D366',color:'white',border:'none',fontFamily:'var(--ff-b)',fontSize:11,fontWeight:700,letterSpacing:'.15em',textTransform:'uppercase',cursor:'pointer',textDecoration:'none'}}>
+          Enviar comprobante
+        </a>
+      </div>
+    </div>
+  );
+}
+
+function BookingModal({ date, onClose }) {
+  const [step, setStep] = useState(1);
+  const [confirming, setConfirming] = useState(false);
+  const [bookingCode, setBookingCode] = useState(null);
+  const services = DB.getServices();
+  const [form, setForm] = useState({
+    eventType:'Boda', timeStart:'18:00', timeEnd:'23:00', persons:150, services:[],
+    clientName:'', clientDNI:'', clientEmail:'', clientPhone:'', paymentMethod:'yape', notes:''
+  });
+  const update = (k,v) => setForm(f=>({...f,[k]:v}));
+  const price = DB.calcPrice(form.eventType, form.persons, form.services);
+
+  const canAdvance1 = form.eventType && form.timeStart && form.timeEnd;
+  const canAdvance2 = form.clientName && form.clientEmail && form.clientPhone && form.clientDNI;
+
+  const confirm = () => {
+    setConfirming(true);
+    setTimeout(()=>{
+      const code = DB.generateCode();
+      const id = DB.generateId();
+      DB.addReservation({id, date, ...form, status:'pendiente', totalAmount:price.total, createdAt:new Date().toISOString().slice(0,10), code});
+      setBookingCode(code);
+      setConfirming(false);
+      setStep(4);
+    }, 1800);
+  };
+
+  const stepLabels = ['Evento','Cliente','Pago'];
+  const fmtDate = d => { const [y,m,day]=d.split('-'); return `${day}/${m}/${y}`; };
+
+  return (
+    <div className="overlay" onClick={e=>{ if(e.target.className==='overlay') onClose(); }}>
+      <div className="modal">
+        <div className="modal-header">
+          <div className="modal-eyebrow">{step < 4 ? `Paso ${step} de 3` : 'Confirmación'}</div>
+          <div className="modal-title">{step < 4 ? `Reserva · ${fmtDate(date)}` : '¡Todo listo!'}</div>
+          <button className="modal-close" onClick={onClose}>✕</button>
+        </div>
+        <div className="modal-body">
+          {step < 4 && (
+            <div className="stepper">
+              {stepLabels.map((l,i)=>(
+                <React.Fragment key={l}>
+                  <div className={`step ${step===i+1?'active':step>i+1?'done':''}`}>
+                    <div className="step-num">{step>i+1?'✓':i+1}</div>
+                    <span className="step-label">{l}</span>
+                  </div>
+                  {i<2 && <div className="step-line"></div>}
+                </React.Fragment>
+              ))}
+            </div>
+          )}
+          {step===1 && <Step1 data={form} onChange={update} services={services} />}
+          {step===2 && <Step2 data={form} onChange={update} price={price} selectedDate={fmtDate(date)} />}
+          {step===3 && <Step3 data={form} onChange={update} price={price} onConfirm={confirm} confirming={confirming} />}
+          {step===4 && <SuccessScreen code={bookingCode} data={{...form,date:fmtDate(date)}} price={price} onClose={onClose} />}
+          {step < 4 && (
+            <div className="btn-row">
+              {step > 1 && <button className="btn-ghost" onClick={()=>setStep(s=>s-1)}>← Atrás</button>}
+              {step < 3 && (
+                <button className="btn-primary" style={{flex:1}}
+                  disabled={step===1?!canAdvance1:!canAdvance2}
+                  onClick={()=>setStep(s=>s+1)}>
+                  {step===1?'Continuar con mis datos →':'Revisar y pagar →'}
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [selectedDate, setSelectedDate] = useState(null);
+  return (
+    <div>
+      <h1 className="page-title">Calendario de <em>disponibilidad</em></h1>
+      <p className="page-sub">Selecciona una fecha disponible para iniciar tu reserva</p>
+      <Calendar onSelectDate={setSelectedDate} />
+      {selectedDate && <BookingModal date={selectedDate} onClose={()=>setSelectedDate(null)} />}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

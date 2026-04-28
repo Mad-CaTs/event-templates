@@ -1,0 +1,415 @@
+// admin-views.jsx — Vistas del Panel Admin
+const { useState, useEffect, useRef } = React;
+const DB = window.SalonDB;
+
+const STATUS_COLORS = { confirmada:'#4caf7d', pendiente:'#f5a623', cancelada:'#e05555' };
+const STATUS_LABELS = { confirmada:'Confirmada', pendiente:'Pendiente', cancelada:'Cancelada' };
+const EVENT_ICONS   = { Boda:'💍', Corporativo:'🤝', Quinceañero:'🌸', Cóctel:'🥂' };
+
+// ── Shared UI ────────────────────────────────────────────────
+function Badge({ status }) {
+  return (
+    <span style={{display:'inline-flex',alignItems:'center',gap:5,padding:'4px 10px',background:STATUS_COLORS[status]+'22',color:STATUS_COLORS[status],fontSize:11,fontWeight:600,letterSpacing:'.08em',textTransform:'uppercase'}}>
+      <span style={{width:6,height:6,borderRadius:'50%',background:STATUS_COLORS[status],display:'inline-block'}}></span>
+      {STATUS_LABELS[status]}
+    </span>
+  );
+}
+
+function Modal({ title, onClose, children }) {
+  return (
+    <div style={{position:'fixed',inset:0,background:'rgba(5,4,2,.9)',backdropFilter:'blur(8px)',zIndex:9000,display:'flex',alignItems:'center',justifyContent:'center',padding:24}}>
+      <div style={{background:'#111009',border:'1px solid rgba(255,187,0,.15)',width:'100%',maxWidth:560,maxHeight:'88vh',overflowY:'auto'}}>
+        <div style={{padding:'24px 28px',borderBottom:'1px solid rgba(255,187,0,.1)',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+          <span style={{fontFamily:'Cormorant Garamond,serif',fontSize:22,fontWeight:300,color:'#E8D09A'}}>{title}</span>
+          <button onClick={onClose} style={{background:'none',border:'1px solid rgba(255,187,0,.2)',color:'#B8A898',width:32,height:32,cursor:'pointer',fontSize:16,display:'flex',alignItems:'center',justifyContent:'center'}}>✕</button>
+        </div>
+        <div style={{padding:'28px'}}>{children}</div>
+      </div>
+    </div>
+  );
+}
+
+function AdminInput({ label, ...props }) {
+  return (
+    <div style={{marginBottom:16}}>
+      <div style={{fontSize:10,letterSpacing:'.25em',textTransform:'uppercase',color:'#8B7B68',marginBottom:6}}>{label}</div>
+      <input style={{width:'100%',background:'rgba(255,255,255,.04)',border:'1px solid rgba(255,187,0,.15)',color:'#E8D09A',fontFamily:'Jost,sans-serif',fontSize:14,padding:'11px 14px',outline:'none'}} {...props} />
+    </div>
+  );
+}
+
+function GoldBtn({ children, onClick, style={}, ghost=false }) {
+  return (
+    <button onClick={onClick} style={{fontFamily:'Jost,sans-serif',fontSize:11,fontWeight:700,letterSpacing:'.2em',textTransform:'uppercase',
+      background:ghost?'transparent':'#ffbb00',color:ghost?'#B8A898':'#0F0C09',
+      border:ghost?'1px solid rgba(255,187,0,.3)':'none',
+      padding:'11px 24px',cursor:'pointer',transition:'all .2s',...style}}>
+      {children}
+    </button>
+  );
+}
+
+// ── RESERVAS VIEW ────────────────────────────────────────────
+function ReservasView() {
+  const [reservas, setReservas] = useState(DB.getReservations());
+  const [filter, setFilter] = useState('all');
+  const [selected, setSelected] = useState(null);
+  const [cancelNote, setCancelNote] = useState('');
+  const [search, setSearch] = useState('');
+
+  const refresh = () => setReservas(DB.getReservations());
+
+  const filtered = reservas.filter(r => {
+    if (filter !== 'all' && r.status !== filter) return false;
+    if (search) {
+      const q = search.toLowerCase();
+      return r.clientName.toLowerCase().includes(q) || r.id.toLowerCase().includes(q) || r.eventType.toLowerCase().includes(q);
+    }
+    return true;
+  });
+
+  const confirm = (id) => { DB.updateReservation(id, {status:'confirmada'}); refresh(); };
+  const cancel  = (id) => { DB.updateReservation(id, {status:'cancelada', notes:cancelNote}); setSelected(null); refresh(); };
+
+  const FILTERS = [['all','Todas'],['confirmada','Confirmadas'],['pendiente','Pendientes'],['cancelada','Canceladas']];
+
+  return (
+    <div>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:28}}>
+        <div>
+          <h2 style={{fontFamily:'Cormorant Garamond,serif',fontSize:36,fontWeight:300,color:'#E8D09A'}}>Gestión de <em style={{fontStyle:'italic',color:'#ffbb00'}}>Reservas</em></h2>
+          <p style={{fontSize:13,fontWeight:300,color:'#8B7B68',marginTop:4}}>{filtered.length} reserva(s) encontrada(s)</p>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div style={{display:'flex',gap:8,marginBottom:20,flexWrap:'wrap'}}>
+        {FILTERS.map(([val,lbl])=>(
+          <button key={val} onClick={()=>setFilter(val)}
+            style={{padding:'8px 18px',background:filter===val?'#ffbb00':'transparent',color:filter===val?'#0F0C09':'#8B7B68',border:'1px solid',borderColor:filter===val?'#ffbb00':'rgba(255,187,0,.2)',fontFamily:'Jost,sans-serif',fontSize:11,fontWeight:600,letterSpacing:'.12em',textTransform:'uppercase',cursor:'pointer'}}>
+            {lbl}
+          </button>
+        ))}
+        <input placeholder="Buscar por nombre, ID o tipo..." value={search} onChange={e=>setSearch(e.target.value)}
+          style={{marginLeft:'auto',background:'rgba(255,255,255,.04)',border:'1px solid rgba(255,187,0,.15)',color:'#E8D09A',fontFamily:'Jost,sans-serif',fontSize:13,padding:'8px 16px',outline:'none',minWidth:240}} />
+      </div>
+
+      {/* Table */}
+      <div style={{overflowX:'auto'}}>
+        <table style={{width:'100%',borderCollapse:'collapse'}}>
+          <thead>
+            <tr style={{borderBottom:'1px solid rgba(255,187,0,.12)'}}>
+              {['ID','Fecha','Evento','Cliente','Personas','Total','Estado','Acciones'].map(h=>(
+                <th key={h} style={{padding:'12px 14px',fontSize:10,letterSpacing:'.2em',textTransform:'uppercase',color:'#8B7B68',fontWeight:600,textAlign:'left',whiteSpace:'nowrap'}}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map(r=>(
+              <tr key={r.id} style={{borderBottom:'1px solid rgba(255,255,255,.04)',transition:'background .15s'}}
+                onMouseEnter={e=>e.currentTarget.style.background='rgba(255,187,0,.03)'}
+                onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
+                <td style={{padding:'14px',fontSize:12,color:'#ffbb00',fontWeight:600,whiteSpace:'nowrap'}}>{r.id}</td>
+                <td style={{padding:'14px',fontSize:13,color:'#E8D09A',whiteSpace:'nowrap'}}>{r.date}</td>
+                <td style={{padding:'14px',fontSize:13,color:'#B8A898'}}>{EVENT_ICONS[r.eventType]||'🎉'} {r.eventType}</td>
+                <td style={{padding:'14px'}}>
+                  <div style={{fontSize:13,color:'#E8D09A',fontWeight:400}}>{r.clientName}</div>
+                  <div style={{fontSize:11,color:'#8B7B68'}}>{r.clientEmail}</div>
+                </td>
+                <td style={{padding:'14px',fontSize:13,color:'#B8A898',whiteSpace:'nowrap'}}>{r.persons} pax</td>
+                <td style={{padding:'14px',fontSize:13,color:'#ffbb00',fontWeight:500,whiteSpace:'nowrap'}}>{DB.fmt(r.totalAmount)}</td>
+                <td style={{padding:'14px'}}><Badge status={r.status} /></td>
+                <td style={{padding:'14px'}}>
+                  <div style={{display:'flex',gap:6}}>
+                    {r.status==='pendiente'&&<GoldBtn onClick={()=>confirm(r.id)} style={{padding:'7px 14px',fontSize:10}}>Confirmar</GoldBtn>}
+                    {r.status!=='cancelada'&&<GoldBtn ghost onClick={()=>setSelected(r)} style={{padding:'7px 14px',fontSize:10}}>Cancelar</GoldBtn>}
+                    <a href={`https://wa.me/51${r.clientPhone}?text=Hola ${r.clientName}, sobre tu reserva ${r.id}...`} target="_blank"
+                      style={{display:'flex',alignItems:'center',padding:'7px 10px',background:'#25D366',color:'white',textDecoration:'none',fontSize:14}}>💬</a>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {filtered.length===0&&<div style={{padding:'48px',textAlign:'center',color:'#8B7B68',fontSize:14}}>No hay reservas con ese filtro.</div>}
+      </div>
+
+      {/* Cancel modal */}
+      {selected&&(
+        <Modal title={`Cancelar ${selected.id}`} onClose={()=>setSelected(null)}>
+          <div style={{fontSize:13,color:'#8B7B68',marginBottom:20}}>¿Confirmas la cancelación de la reserva de <strong style={{color:'#E8D09A'}}>{selected.clientName}</strong> para el {selected.date}?</div>
+          <AdminInput label="Motivo / nota interna" value={cancelNote} onChange={e=>setCancelNote(e.target.value)} placeholder="Ej: Cancelado por el cliente" />
+          <div style={{display:'flex',gap:12,marginTop:8}}>
+            <GoldBtn ghost onClick={()=>setSelected(null)} style={{flex:1}}>No, volver</GoldBtn>
+            <GoldBtn onClick={()=>cancel(selected.id)} style={{flex:1,background:'#e05555',color:'white'}}>Sí, cancelar</GoldBtn>
+          </div>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+// ── CALENDAR ADMIN VIEW ──────────────────────────────────────
+const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const DAYS7  = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+
+function CalendarioAdminView() {
+  const [cur, setCur] = useState(new Date());
+  const [detail, setDetail] = useState(null);
+  const year = cur.getFullYear(), month = cur.getMonth();
+  const reservas = DB.getReservations();
+  const today = new Date().toISOString().slice(0,10);
+
+  const days = [];
+  const first = new Date(year,month,1).getDay();
+  const total = new Date(year,month+1,0).getDate();
+  for(let i=0;i<first;i++) days.push(null);
+  for(let d=1;d<=total;d++) days.push(d);
+
+  const getRes = (d) => {
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    return reservas.find(r=>r.date===dateStr&&r.status!=='cancelada');
+  };
+
+  return (
+    <div>
+      <h2 style={{fontFamily:'Cormorant Garamond,serif',fontSize:36,fontWeight:300,color:'#E8D09A',marginBottom:28}}>Calendario <em style={{fontStyle:'italic',color:'#ffbb00'}}>Admin</em></h2>
+      <div style={{display:'flex',alignItems:'center',gap:20,marginBottom:24}}>
+        <button onClick={()=>{const d=new Date(cur);d.setMonth(d.getMonth()-1);setCur(d);}} style={{background:'none',border:'1px solid rgba(255,187,0,.2)',color:'#ffbb00',width:36,height:36,cursor:'pointer',fontSize:18,display:'flex',alignItems:'center',justifyContent:'center'}}>‹</button>
+        <span style={{fontFamily:'Cormorant Garamond,serif',fontSize:28,fontWeight:300,color:'#E8D09A'}}>{MONTHS[month]} {year}</span>
+        <button onClick={()=>{const d=new Date(cur);d.setMonth(d.getMonth()+1);setCur(d);}} style={{background:'none',border:'1px solid rgba(255,187,0,.2)',color:'#ffbb00',width:36,height:36,cursor:'pointer',fontSize:18,display:'flex',alignItems:'center',justifyContent:'center'}}>›</button>
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:4}}>
+        {DAYS7.map(d=><div key={d} style={{textAlign:'center',fontSize:10,letterSpacing:'.15em',textTransform:'uppercase',color:'#8B7B68',padding:'8px 0'}}>{d}</div>)}
+        {days.map((d,i)=>{
+          if(!d) return <div key={'e'+i}></div>;
+          const res = getRes(d);
+          const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+          const isPast = dateStr < today;
+          const isToday = dateStr === today;
+          const bg = res ? (res.status==='confirmada'?'rgba(76,175,125,.12)':'rgba(245,166,35,.1)') : 'rgba(255,255,255,.02)';
+          const border = res ? (res.status==='confirmada'?'rgba(76,175,125,.4)':'rgba(245,166,35,.4)') : 'rgba(255,255,255,.06)';
+          return (
+            <div key={d} onClick={()=>res&&setDetail(res)}
+              style={{aspectRatio:'1',background:isToday?'rgba(255,187,0,.08)':bg,border:`1px solid ${isToday?'rgba(255,187,0,.6)':border}`,cursor:res?'pointer':'default',padding:8,position:'relative',opacity:isPast?.6:1,transition:'all .15s'}}
+              onMouseEnter={e=>{if(res)e.currentTarget.style.borderColor='#ffbb00';}}
+              onMouseLeave={e=>{e.currentTarget.style.borderColor=isToday?'rgba(255,187,0,.6)':border;}}>
+              <div style={{fontSize:13,fontWeight:isToday?600:300,color:isToday?'#ffbb00':'#E8D09A'}}>{d}</div>
+              {res&&<div style={{fontSize:9,color:res.status==='confirmada'?'#4caf7d':'#f5a623',marginTop:2,lineHeight:1.3}}>{res.eventType}<br/>{res.persons}pax</div>}
+            </div>
+          );
+        })}
+      </div>
+      {detail&&(
+        <Modal title={`${detail.id} — ${detail.date}`} onClose={()=>setDetail(null)}>
+          <div style={{display:'flex',flexDirection:'column',gap:12}}>
+            <Badge status={detail.status} />
+            {[['Evento',`${EVENT_ICONS[detail.eventType]||'🎉'} ${detail.eventType}`],['Cliente',detail.clientName],['DNI',detail.clientDNI],['Email',detail.clientEmail],['Teléfono',detail.clientPhone],['Horario',`${detail.timeStart} – ${detail.timeEnd}`],['Personas',detail.persons+' pax'],['Servicios',(detail.services||[]).join(', ')||'Ninguno'],['Pago',detail.paymentMethod],['Total',DB.fmt(detail.totalAmount)],['Notas',detail.notes||'—']].map(([l,v])=>(
+              <div key={l} style={{display:'flex',gap:12,padding:'10px 0',borderBottom:'1px solid rgba(255,255,255,.05)'}}>
+                <span style={{fontSize:11,letterSpacing:'.15em',textTransform:'uppercase',color:'#8B7B68',minWidth:80}}>{l}</span>
+                <span style={{fontSize:13,color:'#E8D09A'}}>{v}</span>
+              </div>
+            ))}
+          </div>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+// ── SERVICES VIEW ────────────────────────────────────────────
+function ServiciosView() {
+  const [services, setServices] = useState(DB.getServices());
+  const [editing, setEditing] = useState(null);
+  const [saved, setSaved] = useState(false);
+
+  const update = (id, field, val) => {
+    setServices(sv => sv.map(s => s.id===id ? {...s,[field]:val} : s));
+    setSaved(false);
+  };
+  const save = () => { DB.saveServices(services); setSaved(true); setTimeout(()=>setSaved(false),2500); };
+
+  return (
+    <div>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:28}}>
+        <h2 style={{fontFamily:'Cormorant Garamond,serif',fontSize:36,fontWeight:300,color:'#E8D09A'}}>Gestión de <em style={{fontStyle:'italic',color:'#ffbb00'}}>Servicios</em></h2>
+        <GoldBtn onClick={save} style={{background:saved?'#4caf7d':'#ffbb00'}}>{saved?'✓ Guardado':'Guardar cambios'}</GoldBtn>
+      </div>
+      <p style={{fontSize:13,color:'#8B7B68',marginBottom:32}}>Activa, desactiva y ajusta precios sin tocar el código. Los cambios se reflejan en el cotizador y formulario de reserva.</p>
+      <div style={{display:'flex',flexDirection:'column',gap:12}}>
+        {services.map(s=>(
+          <div key={s.id} style={{background:'rgba(255,255,255,.03)',border:'1px solid rgba(255,187,0,.1)',padding:'20px 24px',display:'grid',gridTemplateColumns:'1fr auto auto',gap:20,alignItems:'center',opacity:s.active?1:.5,transition:'opacity .2s'}}>
+            <div>
+              <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:4}}>
+                <span style={{fontSize:20}}>{s.icon}</span>
+                <span style={{fontFamily:'Cormorant Garamond,serif',fontSize:20,fontWeight:300,color:'#E8D09A'}}>{s.name}</span>
+              </div>
+              <div style={{fontSize:12,color:'#8B7B68'}}>{s.desc}</div>
+            </div>
+            <div style={{textAlign:'right'}}>
+              <div style={{fontSize:10,letterSpacing:'.2em',textTransform:'uppercase',color:'#8B7B68',marginBottom:6}}>Precio</div>
+              <div style={{display:'flex',alignItems:'center',gap:6}}>
+                <span style={{color:'#ffbb00',fontSize:13}}>S/</span>
+                <input type="number" value={s.price} onChange={e=>update(s.id,'price',parseInt(e.target.value)||0)}
+                  style={{width:80,background:'rgba(255,255,255,.06)',border:'1px solid rgba(255,187,0,.2)',color:'#ffbb00',fontFamily:'Jost,sans-serif',fontSize:16,fontWeight:500,padding:'6px 10px',outline:'none',textAlign:'right'}} />
+                <span style={{color:'#8B7B68',fontSize:11}}>{s.unit==='per_person'?'/pax':'fijo'}</span>
+              </div>
+            </div>
+            <div>
+              <div style={{fontSize:10,letterSpacing:'.2em',textTransform:'uppercase',color:'#8B7B68',marginBottom:6,textAlign:'center'}}>Estado</div>
+              <div onClick={()=>update(s.id,'active',!s.active)}
+                style={{width:48,height:26,borderRadius:13,background:s.active?'#ffbb00':'rgba(255,255,255,.1)',position:'relative',cursor:'pointer',transition:'background .25s'}}>
+                <div style={{position:'absolute',top:3,left:s.active?22:3,width:20,height:20,borderRadius:'50%',background:'white',transition:'left .25s',boxShadow:'0 1px 4px rgba(0,0,0,.3)'}}></div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── CRM VIEW ─────────────────────────────────────────────────
+function CRMView() {
+  const [clients, setClients] = useState(DB.getClients());
+  const [selected, setSelected] = useState(null);
+  const [search, setSearch] = useState('');
+
+  const filtered = clients.filter(c => {
+    if (!search) return true;
+    const q = search.toLowerCase();
+    return c.name.toLowerCase().includes(q) || c.email.toLowerCase().includes(q);
+  });
+
+  return (
+    <div>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:28}}>
+        <h2 style={{fontFamily:'Cormorant Garamond,serif',fontSize:36,fontWeight:300,color:'#E8D09A'}}>CRM de <em style={{fontStyle:'italic',color:'#ffbb00'}}>Clientes</em></h2>
+        <input placeholder="Buscar cliente..." value={search} onChange={e=>setSearch(e.target.value)}
+          style={{background:'rgba(255,255,255,.04)',border:'1px solid rgba(255,187,0,.15)',color:'#E8D09A',fontFamily:'Jost,sans-serif',fontSize:13,padding:'10px 16px',outline:'none',minWidth:240}} />
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(300px,1fr))',gap:16}}>
+        {filtered.map(c=>(
+          <div key={c.email} style={{background:'rgba(255,255,255,.03)',border:'1px solid rgba(255,187,0,.1)',padding:'24px',cursor:'pointer',transition:'border-color .2s'}}
+            onMouseEnter={e=>e.currentTarget.style.borderColor='rgba(255,187,0,.35)'}
+            onMouseLeave={e=>e.currentTarget.style.borderColor='rgba(255,187,0,.1)'}
+            onClick={()=>setSelected(c)}>
+            <div style={{width:44,height:44,borderRadius:'50%',background:'rgba(255,187,0,.15)',display:'flex',alignItems:'center',justifyContent:'center',fontFamily:'Cormorant Garamond,serif',fontSize:20,color:'#ffbb00',marginBottom:14}}>
+              {c.name.charAt(0)}
+            </div>
+            <div style={{fontFamily:'Cormorant Garamond,serif',fontSize:20,fontWeight:300,color:'#E8D09A',marginBottom:4}}>{c.name}</div>
+            <div style={{fontSize:12,color:'#8B7B68',marginBottom:2}}>{c.email}</div>
+            <div style={{fontSize:12,color:'#8B7B68',marginBottom:16}}>{c.phone}</div>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',paddingTop:14,borderTop:'1px solid rgba(255,255,255,.06)'}}>
+              <div><div style={{fontSize:10,letterSpacing:'.15em',textTransform:'uppercase',color:'#8B7B68'}}>Eventos</div><div style={{fontSize:18,fontWeight:500,color:'#E8D09A'}}>{c.events.length}</div></div>
+              <div style={{textAlign:'right'}}><div style={{fontSize:10,letterSpacing:'.15em',textTransform:'uppercase',color:'#8B7B68'}}>Gastado</div><div style={{fontSize:18,color:'#ffbb00',fontWeight:500}}>{DB.fmt(c.totalSpent)}</div></div>
+              <a href={`https://wa.me/51${c.phone.replace(/\D/g,'')}`} target="_blank" onClick={e=>e.stopPropagation()}
+                style={{background:'#25D366',color:'white',width:36,height:36,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',textDecoration:'none',fontSize:16}}>💬</a>
+            </div>
+          </div>
+        ))}
+        {filtered.length===0&&<div style={{padding:'48px',textAlign:'center',color:'#8B7B68',gridColumn:'1/-1'}}>No se encontraron clientes.</div>}
+      </div>
+
+      {selected&&(
+        <Modal title={selected.name} onClose={()=>setSelected(null)}>
+          <div style={{marginBottom:20}}>
+            {[['Email',selected.email],['Teléfono',selected.phone],['DNI',selected.dni||'—']].map(([l,v])=>(
+              <div key={l} style={{display:'flex',gap:12,padding:'10px 0',borderBottom:'1px solid rgba(255,255,255,.05)'}}>
+                <span style={{fontSize:11,letterSpacing:'.15em',textTransform:'uppercase',color:'#8B7B68',minWidth:70}}>{l}</span>
+                <span style={{fontSize:13,color:'#E8D09A'}}>{v}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{fontSize:10,letterSpacing:'.2em',textTransform:'uppercase',color:'#8B7B68',marginBottom:12}}>Historial de eventos</div>
+          {selected.events.map(ev=>(
+            <div key={ev.id} style={{background:'rgba(255,255,255,.03)',padding:'12px 16px',marginBottom:8,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+              <div>
+                <div style={{fontSize:13,color:'#E8D09A'}}>{ev.id} · {ev.type}</div>
+                <div style={{fontSize:11,color:'#8B7B68'}}>{ev.date}</div>
+              </div>
+              <div style={{textAlign:'right'}}>
+                <Badge status={ev.status} />
+                <div style={{fontSize:13,color:'#ffbb00',marginTop:4}}>{DB.fmt(ev.amount)}</div>
+              </div>
+            </div>
+          ))}
+          <div style={{marginTop:20}}>
+            <a href={`https://wa.me/51${selected.phone.replace(/\D/g,'')}?text=Hola ${selected.name}, le contactamos del Salón de Eventos...`} target="_blank"
+              style={{display:'flex',alignItems:'center',justifyContent:'center',gap:10,background:'#25D366',color:'white',padding:'14px',textDecoration:'none',fontFamily:'Jost,sans-serif',fontSize:12,fontWeight:700,letterSpacing:'.15em',textTransform:'uppercase'}}>
+              💬 Contactar por WhatsApp
+            </a>
+          </div>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
+// ── GALLERY ADMIN VIEW ───────────────────────────────────────
+function GaleriaView() {
+  const [photos, setPhotos] = useState(DB.getGallery());
+  const [saved, setSaved] = useState(false);
+  const [dragSrc, setDragSrc] = useState(null);
+  const fileRef = useRef();
+
+  const save = () => { DB.saveGallery(photos); setSaved(true); setTimeout(()=>setSaved(false),2500); };
+  const del = (i) => { if(!confirm('¿Eliminar esta foto?')) return; setPhotos(p=>p.filter((_,idx)=>idx!==i)); setSaved(false); };
+  const updateCaption = (i,v) => { setPhotos(p=>p.map((ph,idx)=>idx===i?{...ph,caption:v}:ph)); setSaved(false); };
+
+  const handleFiles = (files) => {
+    Array.from(files).forEach(f=>{
+      if(!f.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = e => { setPhotos(p=>[...p,{src:e.target.result,caption:f.name.replace(/\.[^.]+$/,'').replace(/[-_]/g,' ')}]); setSaved(false); };
+      reader.readAsDataURL(f);
+    });
+  };
+
+  return (
+    <div>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:28}}>
+        <h2 style={{fontFamily:'Cormorant Garamond,serif',fontSize:36,fontWeight:300,color:'#E8D09A'}}>Gestión de <em style={{fontStyle:'italic',color:'#ffbb00'}}>Galería</em></h2>
+        <GoldBtn onClick={save} style={{background:saved?'#4caf7d':'#ffbb00'}}>{saved?'✓ Guardado':'Guardar cambios'}</GoldBtn>
+      </div>
+      {/* Upload */}
+      <div onClick={()=>fileRef.current.click()}
+        style={{border:'2px dashed rgba(255,187,0,.25)',padding:'40px',textAlign:'center',cursor:'pointer',marginBottom:28,transition:'border-color .2s,background .2s'}}
+        onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(255,187,0,.6)';e.currentTarget.style.background='rgba(255,187,0,.03)';}}
+        onMouseLeave={e=>{e.currentTarget.style.borderColor='rgba(255,187,0,.25)';e.currentTarget.style.background='transparent';}}
+        onDragOver={e=>e.preventDefault()}
+        onDrop={e=>{e.preventDefault();handleFiles(e.dataTransfer.files);}}>
+        <input type="file" ref={fileRef} style={{display:'none'}} multiple accept="image/*" onChange={e=>handleFiles(e.target.files)} />
+        <div style={{fontSize:36,marginBottom:12,opacity:.4}}>📷</div>
+        <div style={{fontSize:13,color:'#8B7B68'}}>Arrastra fotos aquí o haz click para seleccionar</div>
+        <div style={{fontSize:11,color:'#5a5045',marginTop:6}}>JPG, PNG, WebP, AVIF</div>
+      </div>
+      {/* Grid */}
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(220px,1fr))',gap:12}}>
+        {photos.map((p,i)=>(
+          <div key={i} draggable
+            onDragStart={()=>setDragSrc(i)}
+            onDragOver={e=>e.preventDefault()}
+            onDrop={()=>{
+              if(dragSrc===null||dragSrc===i) return;
+              setPhotos(ph=>{const a=[...ph];const[m]=a.splice(dragSrc,1);a.splice(i,0,m);return a;});
+              setDragSrc(null); setSaved(false);
+            }}
+            style={{border:'1px solid rgba(255,187,0,.12)',overflow:'hidden',cursor:'grab',position:'relative'}}>
+            <div style={{position:'absolute',top:6,left:6,zIndex:2,background:'rgba(255,187,0,.9)',color:'#0F0C09',width:22,height:22,display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:700}}>{i+1}</div>
+            <button onClick={()=>del(i)} style={{position:'absolute',top:6,right:6,zIndex:2,background:'rgba(224,85,85,.9)',border:'none',color:'white',width:28,height:28,cursor:'pointer',fontSize:13,display:'flex',alignItems:'center',justifyContent:'center'}}>✕</button>
+            <img src={p.src} alt={p.caption} style={{width:'100%',aspectRatio:'4/3',objectFit:'cover',display:'block'}}
+              onError={e=>{ e.target.style.display='none'; }} />
+            <input value={p.caption} onChange={e=>updateCaption(i,e.target.value)}
+              style={{display:'block',width:'100%',background:'rgba(0,0,0,.7)',border:'none',borderTop:'1px solid rgba(255,187,0,.1)',color:'#E8D09A',fontFamily:'Jost,sans-serif',fontSize:12,padding:'8px 10px',outline:'none'}} />
+          </div>
+        ))}
+        {photos.length===0&&<div style={{gridColumn:'1/-1',padding:'48px',textAlign:'center',color:'#8B7B68',border:'1px dashed rgba(255,255,255,.08)'}}>No hay fotos. Sube la primera imagen.</div>}
+      </div>
+    </div>
+  );
+}
+
+// ── Export all views ─────────────────────────────────────────
+Object.assign(window, { ReservasView, CalendarioAdminView, ServiciosView, CRMView, GaleriaView });
