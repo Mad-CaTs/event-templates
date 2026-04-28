@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Galería · Salón de Eventos</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --noir: #0F0C09; --gold: #ffbb00; --champagne: #E8D09A;
+  --cream: #FAF4E8; --stone: #8B7B68; --stone-light: #B8A898;
+  --ff-display: 'Cormorant Garamond', serif; --ff-body: 'Jost', sans-serif;
+}
+body { font-family: var(--ff-body); background: #0a0806; color: var(--champagne); min-height: 100vh; }
+
+/* LOGIN */
+#loginScreen {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+}
+.login-box {
+  width: 380px; border: 1px solid rgba(255,187,0,.2); padding: 56px 48px; text-align: center;
+  background: rgba(255,255,255,.02);
+}
+.login-logo {
+  font-family: var(--ff-display); font-size: 28px; font-weight: 300;
+  letter-spacing: .2em; color: var(--champagne); text-transform: uppercase; margin-bottom: 8px;
+}
+.login-sub {
+  font-size: 10px; letter-spacing: .3em; text-transform: uppercase;
+  color: var(--stone-light); margin-bottom: 48px;
+}
+.login-label {
+  display: block; font-size: 10px; letter-spacing: .25em; text-transform: uppercase;
+  color: var(--stone-light); margin-bottom: 10px; text-align: left;
+}
+.login-input {
+  width: 100%; padding: 14px 18px; background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,187,0,.2); color: var(--champagne);
+  font-family: var(--ff-body); font-size: 15px; outline: none;
+  transition: border-color .2s; margin-bottom: 24px;
+}
+.login-input:focus { border-color: var(--gold); }
+.login-btn {
+  width: 100%; padding: 16px; background: var(--gold); color: var(--noir);
+  border: none; font-family: var(--ff-body); font-size: 11px; font-weight: 700;
+  letter-spacing: .25em; text-transform: uppercase; cursor: pointer;
+  transition: background .2s;
+}
+.login-btn:hover { background: #ffc933; }
+.login-error {
+  color: #e05555; font-size: 12px; margin-top: 12px; display: none;
+}
+
+/* ADMIN PANEL */
+#adminPanel { display: none; }
+.admin-header {
+  background: rgba(255,255,255,.03); border-bottom: 1px solid rgba(255,187,0,.12);
+  padding: 20px 48px; display: flex; align-items: center; justify-content: space-between;
+}
+.admin-logo {
+  font-family: var(--ff-display); font-size: 22px; font-weight: 300;
+  letter-spacing: .15em; color: var(--champagne); text-transform: uppercase;
+}
+.admin-logo span { color: var(--gold); font-size: 11px; letter-spacing: .3em; display: block; margin-top: 2px; font-family: var(--ff-body); font-weight: 400; }
+.admin-logout {
+  font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--stone-light); background: none; border: 1px solid rgba(255,187,0,.2);
+  padding: 8px 20px; cursor: pointer; transition: border-color .2s, color .2s;
+}
+.admin-logout:hover { border-color: var(--gold); color: var(--gold); }
+
+.admin-body { padding: 48px; max-width: 1100px; margin: 0 auto; }
+
+.admin-section-title {
+  font-family: var(--ff-display); font-size: 32px; font-weight: 300;
+  color: var(--champagne); margin-bottom: 8px;
+}
+.admin-section-sub {
+  font-size: 13px; font-weight: 300; color: var(--stone-light); margin-bottom: 40px;
+}
+
+/* Upload zone */
+.upload-zone {
+  border: 2px dashed rgba(255,187,0,.3); padding: 56px;
+  text-align: center; cursor: pointer; transition: border-color .2s, background .2s;
+  margin-bottom: 48px; position: relative;
+}
+.upload-zone:hover, .upload-zone.drag { border-color: var(--gold); background: rgba(255,187,0,.04); }
+.upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+.upload-icon { font-size: 40px; margin-bottom: 16px; opacity: .4; }
+.upload-text { font-size: 14px; font-weight: 300; color: var(--stone-light); margin-bottom: 8px; }
+.upload-hint { font-size: 11px; letter-spacing: .1em; color: rgba(184,168,152,.4); }
+
+/* Gallery grid */
+.gallery-admin-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+.gallery-admin-item {
+  position: relative; aspect-ratio: 4/3; overflow: hidden;
+  border: 1px solid rgba(255,187,0,.15); cursor: grab;
+  transition: border-color .2s;
+}
+.gallery-admin-item:hover { border-color: rgba(255,187,0,.4); }
+.gallery-admin-item.dragging { opacity: .4; border-color: var(--gold); cursor: grabbing; }
+.gallery-admin-item.drag-over { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold); }
+.gallery-admin-item img {
+  width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none;
+}
+.gallery-item-overlay {
+  position: absolute; inset: 0; background: rgba(10,8,5,.7);
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  opacity: 0; transition: opacity .2s;
+}
+.gallery-admin-item:hover .gallery-item-overlay { opacity: 1; }
+.gallery-item-caption {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: linear-gradient(transparent, rgba(10,8,5,.85));
+  padding: 16px 12px 10px;
+}
+.caption-input {
+  width: 100%; background: transparent; border: none; border-bottom: 1px solid rgba(255,187,0,.3);
+  color: var(--champagne); font-family: var(--ff-body); font-size: 12px;
+  outline: none; padding: 4px 0;
+}
+.caption-input::placeholder { color: rgba(184,168,152,.4); }
+.caption-input:focus { border-bottom-color: var(--gold); }
+.drag-handle {
+  position: absolute; top: 8px; left: 8px;
+  color: rgba(255,187,0,.6); font-size: 16px; cursor: grab;
+}
+.item-num {
+  position: absolute; top: 8px; right: 8px;
+  width: 24px; height: 24px; background: rgba(255,187,0,.9);
+  color: var(--noir); font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.btn-delete {
+  background: rgba(200,50,50,.9); color: white; border: none;
+  width: 36px; height: 36px; cursor: pointer; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .2s;
+}
+.btn-delete:hover { background: #c0392b; }
+.btn-preview {
+  background: rgba(255,187,0,.9); color: var(--noir); border: none;
+  width: 36px; height: 36px; cursor: pointer; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* Save bar */
+.save-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: rgba(10,8,5,.95); border-top: 1px solid rgba(255,187,0,.2);
+  padding: 16px 48px; display: flex; align-items: center; justify-content: space-between;
+  backdrop-filter: blur(8px);
+}
+.save-status { font-size: 13px; font-weight: 300; color: var(--stone-light); }
+.save-status.saved { color: #4caf7d; }
+.btn-save {
+  background: var(--gold); color: var(--noir); border: none;
+  font-family: var(--ff-body); font-size: 11px; font-weight: 700;
+  letter-spacing: .2em; text-transform: uppercase; padding: 14px 36px;
+  cursor: pointer; transition: background .2s;
+}
+.btn-save:hover { background: #ffc933; }
+.btn-view-site {
+  background: transparent; color: var(--champagne); border: 1px solid rgba(255,187,0,.3);
+  font-family: var(--ff-body); font-size: 11px; font-weight: 500;
+  letter-spacing: .15em; text-transform: uppercase; padding: 14px 28px;
+  cursor: pointer; text-decoration: none; transition: border-color .2s;
+}
+.btn-view-site:hover { border-color: var(--gold); }
+
+/* Toast */
+.toast {
+  position: fixed; top: 24px; right: 24px; z-index: 9999;
+  background: var(--noir); border: 1px solid var(--gold);
+  padding: 14px 24px; font-size: 13px; color: var(--champagne);
+  transform: translateY(-80px); opacity: 0;
+  transition: transform .3s, opacity .3s;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+
+/* Empty state */
+.empty-state {
+  grid-column: 1 / -1; text-align: center; padding: 60px;
+  color: var(--stone-light); font-size: 14px; font-weight: 300;
+  border: 1px dashed rgba(255,187,0,.1);
+}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">Salón de Eventos</div>
+    <div class="login-sub">Panel de administración</div>
+    <label class="login-label">Contraseña</label>
+    <input class="login-input" type="password" id="pwInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Ingresar</button>
+    <div class="login-error" id="loginError">Contraseña incorrecta</div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="adminPanel">
+  <header class="admin-header">
+    <div class="admin-logo">
+      Salón de Eventos
+      <span>Panel de Galería</span>
+    </div>
+    <div style="display:flex;gap:16px;align-items:center">
+      <a href="Landing Page.html" class="btn-view-site" target="_blank">Ver sitio →</a>
+      <button class="admin-logout" onclick="logout()">Salir</button>
+    </div>
+  </header>
+
+  <div class="admin-body">
+    <h1 class="admin-section-title">Gestión de <em style="font-style:italic;color:var(--gold)">Galería</em></h1>
+    <p class="admin-section-sub">Sube, elimina y reordena las fotos arrastrándolas. Los cambios se aplican al sitio al guardar.</p>
+
+    <!-- Upload -->
+    <div class="upload-zone" id="uploadZone">
+      <input type="file" id="fileInput" accept="image/*" multiple onchange="handleFiles(this.files)">
+      <div class="upload-icon">📷</div>
+      <div class="upload-text">Arrastra fotos aquí o haz click para seleccionar</div>
+      <div class="upload-hint">JPG, PNG, WebP, AVIF · Máximo 10 MB por imagen</div>
+    </div>
+
+    <!-- Grid -->
+    <div class="gallery-admin-grid" id="adminGrid">
+      <div class="empty-state" id="emptyState">No hay fotos en la galería. Sube tu primera imagen.</div>
+    </div>
+  </div>
+
+  <!-- Save bar -->
+  <div class="save-bar">
+    <span class="save-status" id="saveStatus">Cambios sin guardar</span>
+    <div style="display:flex;gap:12px">
+      <button class="btn-save" onclick="saveGallery()">Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const PASS = 'admin2025';
+const STORAGE_KEY = 'salon_gallery_v2';
+
+// ─── AUTH ───
+function doLogin() {
+  const pw = document.getElementById('pwInput').value;
+  if (pw === PASS) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    loadGallery();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+    document.getElementById('pwInput').value = '';
+  }
+}
+function logout() {
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('adminPanel').style.display = 'none';
+  document.getElementById('pwInput').value = '';
+}
+
+// ─── GALLERY STATE ───
+let photos = []; // [{src: dataURL, caption: ''}]
+let dragSrc = null;
+
+function loadGallery() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try { photos = JSON.parse(saved); } catch(e) { photos = []; }
+  } else {
+    // Default photos from existing gallery
+    photos = [
+      { src: 'uploads/1.avif', caption: 'Cóctel & Celebración' },
+      { src: 'uploads/4.avif', caption: 'Jardín con Pérgola' },
+      { src: 'uploads/3.avif', caption: 'Mesa de Honor — Bodas' },
+      { src: 'uploads/2.avif', caption: 'Salón Quinceañero' },
+      { src: 'uploads/5.avif', caption: 'Fachada del Local' },
+    ];
+  }
+  renderGrid();
+  updateSaveStatus(true);
+}
+
+function renderGrid() {
+  const grid = document.getElementById('adminGrid');
+  const empty = document.getElementById('emptyState');
+  if (photos.length === 0) {
+    grid.innerHTML = '';
+    grid.appendChild(empty);
+    return;
+  }
+  grid.innerHTML = '';
+  photos.forEach((photo, idx) => {
+    const item = document.createElement('div');
+    item.className = 'gallery-admin-item';
+    item.draggable = true;
+    item.dataset.idx = idx;
+    item.innerHTML = `
+      <img src="${photo.src}" alt="${photo.caption}" onerror="this.src='data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'240\\' height=\\'180\\'><rect fill=\\'%231a1510\\' width=\\'100%\\' height=\\'100%\\'/><text x=\\'50%\\' y=\\'50%\\' fill=\\'%23C4943A\\' text-anchor=\\'middle\\' dy=\\'.3em\\' font-size=\\'14\\'>Sin imagen</text></svg>'">
+      <div class="drag-handle">⠿</div>
+      <div class="item-num">${idx + 1}</div>
+      <div class="gallery-item-overlay">
+        <button class="btn-delete" onclick="deletePhoto(${idx})" title="Eliminar">✕</button>
+      </div>
+      <div class="gallery-item-caption">
+        <input class="caption-input" type="text" placeholder="Descripción de la foto..."
+          value="${photo.caption}" oninput="updateCaption(${idx}, this.value)">
+      </div>
+    `;
+    // Drag events
+    item.addEventListener('dragstart', e => {
+      dragSrc = idx;
+      item.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    item.addEventListener('dragend', () => {
+      item.classList.remove('dragging');
+      document.querySelectorAll('.gallery-admin-item').forEach(i => i.classList.remove('drag-over'));
+    });
+    item.addEventListener('dragover', e => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      item.classList.add('drag-over');
+    });
+    item.addEventListener('dragleave', () => item.classList.remove('drag-over'));
+    item.addEventListener('drop', e => {
+      e.preventDefault();
+      if (dragSrc !== null && dragSrc !== idx) {
+        const moved = photos.splice(dragSrc, 1)[0];
+        photos.splice(idx, 0, moved);
+        renderGrid();
+        updateSaveStatus(false);
+      }
+    });
+    grid.appendChild(item);
+  });
+}
+
+function deletePhoto(idx) {
+  if (!confirm('¿Eliminar esta foto de la galería?')) return;
+  photos.splice(idx, 1);
+  renderGrid();
+  updateSaveStatus(false);
+}
+
+function updateCaption(idx, val) {
+  photos[idx].caption = val;
+  updateSaveStatus(false);
+}
+
+// ─── FILE UPLOAD ───
+function handleFiles(files) {
+  const arr = Array.from(files);
+  let loaded = 0;
+  arr.forEach(file => {
+    if (!file.type.startsWith('image/')) return;
+    if (file.size > 10 * 1024 * 1024) { showToast('⚠ ' + file.name + ' supera los 10 MB'); return; }
+    const reader = new FileReader();
+    reader.onload = e => {
+      photos.push({ src: e.target.result, caption: file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ') });
+      loaded++;
+      if (loaded === arr.length) { renderGrid(); updateSaveStatus(false); showToast('✓ ' + loaded + ' foto(s) añadida(s)'); }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// Drag & drop on upload zone
+const uploadZone = document.getElementById('uploadZone');
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadZone.classList.remove('drag');
+  handleFiles(e.dataTransfer.files);
+});
+
+// ─── SAVE ───
+function saveGallery() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(photos));
+    updateSaveStatus(true);
+    showToast('✓ Galería guardada correctamente');
+  } catch(e) {
+    showToast('⚠ Error al guardar (almacenamiento lleno)');
+  }
+}
+
+function updateSaveStatus(saved) {
+  const el = document.getElementById('saveStatus');
+  el.textContent = saved ? '✓ Cambios guardados' : 'Cambios sin guardar';
+  el.className = 'save-status' + (saved ? ' saved' : '');
+}
+
+// ─── TOAST ───
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Enter key on login
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('loginScreen').style.display !== 'none') doLogin();
+});
+</script>
+</body>
+</html>

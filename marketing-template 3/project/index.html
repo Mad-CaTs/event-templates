@@ -1,0 +1,1819 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Salón de Eventos — Salón de Eventos Premium · Lima</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --noir:       #0F0C09;
+  --gold:       #ffbb00;
+  --gold-light: #ffc933;
+  --champagne:  #E8D09A;
+  --cream:      #FAF4E8;
+  --ivory:      #FFF9F0;
+  --stone:      #8B7B68;
+  --stone-light:#B8A898;
+  --ff-display: 'Cormorant Garamond', serif;
+  --ff-body:    'Jost', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--ff-body);
+  background: var(--ivory);
+  color: var(--noir);
+  overflow-x: hidden;
+}
+
+/* ─── NAV ─── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 28px 60px;
+  transition: background .4s, padding .4s, box-shadow .4s;
+}
+nav.scrolled {
+  background: rgba(15,12,9,.92);
+  backdrop-filter: blur(12px);
+  padding: 18px 60px;
+  box-shadow: 0 2px 40px rgba(0,0,0,.3);
+}
+.nav-logo {
+  font-family: var(--ff-display);
+  font-size: 28px; font-weight: 300; letter-spacing: .18em;
+  color: var(--champagne); text-transform: uppercase;
+}
+.nav-logo span { color: var(--gold); }
+.nav-links { display: flex; gap: 36px; list-style: none; }
+.nav-links a {
+  font-family: var(--ff-body); font-size: 12px; font-weight: 500;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--champagne);
+  text-decoration: none; opacity: .8;
+  transition: opacity .2s, color .2s;
+}
+.nav-links a:hover { opacity: 1; color: var(--gold); }
+.nav-cta {
+  font-family: var(--ff-body); font-size: 11px; font-weight: 600;
+  letter-spacing: .18em; text-transform: uppercase;
+  color: var(--noir); background: var(--gold);
+  border: none; padding: 12px 28px; cursor: pointer;
+  transition: background .25s, transform .2s;
+}
+.nav-cta:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+/* ─── HERO ─── */
+.hero {
+  position: relative; height: 100vh; min-height: 700px;
+  display: flex; align-items: center; overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, #0F0C09 0%, #1C1510 40%, #2A1E12 70%, #1a1208 100%);
+}
+/* Ornamental grid overlay */
+.hero-bg::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(196,148,58,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(196,148,58,.06) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+/* Gold bokeh blobs */
+.hero-bg::after {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 600px 400px at 75% 60%, rgba(196,148,58,.12) 0%, transparent 70%),
+    radial-gradient(ellipse 300px 300px at 20% 80%, rgba(196,148,58,.07) 0%, transparent 60%),
+    radial-gradient(ellipse 400px 200px at 90% 10%, rgba(232,208,154,.06) 0%, transparent 60%);
+}
+
+/* Photo on right */
+.hero-photo-frame {
+  position: absolute; right: 0; top: 0; bottom: 0; width: 52%;
+  overflow: hidden;
+}
+.hero-photo-frame::before {
+  content: '';
+  position: absolute; inset: 0; z-index: 2;
+  background: linear-gradient(90deg, #0F0C09 0%, transparent 35%),
+              linear-gradient(0deg, rgba(15,12,9,.5) 0%, transparent 40%);
+}
+.hero-photo {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+
+/* Diagonal gold rule */
+.hero-rule {
+  position: absolute; left: 48%; top: 0; bottom: 0; width: 1px; z-index: 3;
+  background: linear-gradient(180deg, transparent 0%, rgba(196,148,58,.5) 30%, rgba(196,148,58,.5) 70%, transparent 100%);
+}
+
+.hero-content {
+  position: relative; z-index: 4;
+  padding: 0 0 0 80px;
+  width: 54%;
+}
+
+.hero-eyebrow {
+  font-family: var(--ff-body); font-size: 11px; font-weight: 500;
+  letter-spacing: .35em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 28px;
+  display: flex; align-items: center; gap: 16px;
+  opacity: 0; animation: fadeUp .8s .3s forwards;
+}
+.hero-eyebrow::before {
+  content: ''; width: 48px; height: 1px; background: var(--gold);
+}
+
+.hero-title {
+  font-family: var(--ff-display);
+  font-size: clamp(64px, 5.5vw, 96px);
+  font-weight: 300; line-height: 1.05; color: var(--champagne);
+  margin-bottom: 32px; letter-spacing: -.01em;
+  opacity: 0; animation: fadeUp .9s .5s forwards;
+}
+.hero-title em { font-style: italic; color: var(--gold); }
+
+.hero-sub {
+  font-family: var(--ff-body); font-size: 16px; font-weight: 300;
+  line-height: 1.7; color: var(--stone-light);
+  max-width: 420px; margin-bottom: 48px;
+  opacity: 0; animation: fadeUp .9s .7s forwards;
+}
+
+.hero-actions {
+  display: flex; align-items: center; gap: 28px;
+  opacity: 0; animation: fadeUp .9s .9s forwards;
+}
+.btn-primary {
+  font-family: var(--ff-body); font-size: 12px; font-weight: 600;
+  letter-spacing: .22em; text-transform: uppercase;
+  color: var(--noir); background: var(--gold);
+  padding: 18px 44px; border: none; cursor: pointer;
+  transition: background .25s, transform .2s, box-shadow .2s;
+  text-decoration: none; display: inline-block;
+}
+.btn-primary:hover {
+  background: var(--gold-light); transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(196,148,58,.4);
+}
+.btn-ghost {
+  font-family: var(--ff-body); font-size: 12px; font-weight: 500;
+  letter-spacing: .18em; text-transform: uppercase;
+  color: var(--champagne); background: transparent;
+  border: 1px solid rgba(232,208,154,.3);
+  padding: 18px 36px; cursor: pointer;
+  transition: border-color .25s, color .25s;
+  text-decoration: none; display: inline-block;
+}
+.btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+.hero-stats {
+  position: absolute; bottom: 48px; left: 80px; z-index: 4;
+  display: flex; gap: 56px;
+  opacity: 0; animation: fadeUp .9s 1.1s forwards;
+}
+.stat-item {}
+.stat-num {
+  font-family: var(--ff-display); font-size: 42px; font-weight: 300;
+  color: var(--gold); line-height: 1;
+}
+.stat-label {
+  font-family: var(--ff-body); font-size: 10px; letter-spacing: .25em;
+  text-transform: uppercase; color: var(--stone-light); margin-top: 6px;
+}
+
+/* ─── SECTION BASE ─── */
+section { position: relative; }
+.section-eyebrow {
+  font-family: var(--ff-body); font-size: 10px; font-weight: 600;
+  letter-spacing: .4em; text-transform: uppercase; color: var(--gold);
+  display: flex; align-items: center; gap: 14px; margin-bottom: 20px;
+}
+.section-eyebrow::after { content: ''; flex: 1; max-width: 60px; height: 1px; background: var(--gold); }
+.section-title {
+  font-family: var(--ff-display);
+  font-size: clamp(40px, 3.5vw, 64px); font-weight: 300;
+  line-height: 1.1; letter-spacing: -.01em; color: var(--noir);
+}
+.section-title em { font-style: italic; color: var(--gold); }
+.section-sub {
+  font-family: var(--ff-body); font-size: 15px; font-weight: 300;
+  color: var(--stone); line-height: 1.75; max-width: 520px; margin-top: 20px;
+}
+
+/* ─── FEATURES ─── */
+.features {
+  background: var(--noir);
+  padding: 120px 80px;
+}
+.features-header {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  margin-bottom: 80px;
+}
+.features-header .section-title { color: var(--champagne); }
+.features-header .section-eyebrow { color: var(--gold); }
+.features-header .section-sub { color: var(--stone-light); }
+
+.features-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px;
+}
+.feature-card {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(196,148,58,.12);
+  padding: 52px 40px;
+  transition: background .3s, border-color .3s, transform .3s;
+  position: relative; overflow: hidden;
+}
+.feature-card::before {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+  background: var(--gold); transform: scaleX(0); transform-origin: left;
+  transition: transform .4s cubic-bezier(.4,0,.2,1);
+}
+.feature-card:hover { background: rgba(196,148,58,.05); border-color: rgba(196,148,58,.3); }
+.feature-card:hover::before { transform: scaleX(1); }
+.feature-icon {
+  width: 52px; height: 52px; margin-bottom: 32px;
+  color: var(--gold); opacity: .9;
+}
+.feature-num {
+  font-family: var(--ff-display); font-size: 13px; font-weight: 300;
+  color: rgba(196,148,58,.4); letter-spacing: .2em; margin-bottom: 20px;
+}
+.feature-title {
+  font-family: var(--ff-display); font-size: 26px; font-weight: 400;
+  color: var(--champagne); margin-bottom: 16px; line-height: 1.2;
+}
+.feature-desc {
+  font-family: var(--ff-body); font-size: 14px; font-weight: 300;
+  color: var(--stone-light); line-height: 1.7;
+}
+.feature-detail {
+  margin-top: 24px; font-family: var(--ff-body); font-size: 11px;
+  font-weight: 600; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--gold);
+}
+
+/* ─── GALLERY ─── */
+.gallery { padding: 120px 80px; background: var(--cream); }
+.gallery-header { margin-bottom: 64px; }
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: 280px 280px;
+  gap: 12px;
+}
+.gallery-item {
+  overflow: hidden; position: relative; cursor: pointer;
+}
+.gallery-item:nth-child(1) { grid-column: 1 / 6; grid-row: 1 / 2; }
+.gallery-item:nth-child(2) { grid-column: 6 / 9; grid-row: 1 / 2; }
+.gallery-item:nth-child(3) { grid-column: 9 / 13; grid-row: 1 / 3; }
+.gallery-item:nth-child(4) { grid-column: 1 / 4; grid-row: 2 / 3; }
+.gallery-item:nth-child(5) { grid-column: 4 / 9; grid-row: 2 / 3; }
+
+.gallery-ph {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; position: relative;
+  transition: transform .5s cubic-bezier(.4,0,.2,1);
+}
+.gallery-item:hover .gallery-ph { transform: scale(1.04); }
+
+.gallery-ph::after {
+  content: ''; position: absolute; inset: 0;
+  background: rgba(15,12,9,0);
+  transition: background .3s;
+}
+.gallery-item:hover .gallery-ph::after { background: rgba(15,12,9,.25); }
+
+.gallery-ph-inner {
+  width: 80%; height: 80%;
+  border: 1px solid rgba(196,148,58,.3);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 10px;
+}
+.gallery-ph-label {
+  font-family: var(--ff-body); font-size: 9px; letter-spacing: .3em;
+  text-transform: uppercase; color: rgba(196,148,58,.6);
+}
+
+/* Gallery color backgrounds — warm, rich */
+.gallery-item:nth-child(1) .gallery-ph { background: linear-gradient(135deg, #2a1e12 0%, #3d2a15 50%, #251a0d 100%); }
+.gallery-item:nth-child(2) .gallery-ph { background: linear-gradient(160deg, #1e1a14 0%, #2e2218 50%, #1a1410 100%); }
+.gallery-item:nth-child(3) .gallery-ph { background: linear-gradient(180deg, #2d2015 0%, #3a2918 50%, #221810 100%); }
+.gallery-item:nth-child(4) .gallery-ph { background: linear-gradient(130deg, #1c1810 0%, #2a2015 50%, #161210 100%); }
+.gallery-item:nth-child(5) .gallery-ph { background: linear-gradient(150deg, #26200f 0%, #35290f 50%, #1e190a 100%); }
+
+/* ─── EVENT TYPES ─── */
+.event-types { background: var(--ivory); padding: 120px 80px; }
+.event-types-inner {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 80px; align-items: center;
+}
+.event-types-left {}
+.event-types-right {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+}
+.event-card {
+  border: 1px solid rgba(196,148,58,.2);
+  padding: 40px 32px; position: relative;
+  cursor: pointer; overflow: hidden;
+  transition: border-color .3s, transform .3s;
+  background: white;
+}
+.event-card::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--gold); transform: scaleX(0); transform-origin: left;
+  transition: transform .4s cubic-bezier(.4,0,.2,1);
+}
+.event-card:hover { border-color: var(--gold); transform: translateY(-4px); }
+.event-card:hover::after { transform: scaleX(1); }
+.event-card-icon {
+  font-size: 32px; margin-bottom: 20px; display: block;
+  filter: sepia(1) saturate(.8) hue-rotate(10deg);
+}
+.event-card-title {
+  font-family: var(--ff-display); font-size: 24px; font-weight: 400;
+  color: var(--noir); margin-bottom: 10px;
+}
+.event-card-desc {
+  font-family: var(--ff-body); font-size: 13px; font-weight: 300;
+  color: var(--stone); line-height: 1.65;
+}
+
+/* ─── TESTIMONIALS ─── */
+.testimonials { background: var(--noir); padding: 120px 80px; overflow: hidden; }
+.testimonials-header { text-align: center; margin-bottom: 80px; }
+.testimonials-header .section-title { color: var(--champagne); }
+.testimonials-header .section-eyebrow { justify-content: center; }
+.testimonials-header .section-eyebrow::after { display: none; }
+.testimonials-header .section-eyebrow::before { content: ''; width: 60px; height: 1px; background: var(--gold); }
+
+.testimonials-track {
+  display: flex; gap: 32px;
+}
+.testimonial-card {
+  flex: 0 0 420px; background: rgba(255,255,255,.04);
+  border: 1px solid rgba(196,148,58,.15); padding: 48px 44px;
+  position: relative;
+}
+.testimonial-card::before {
+  content: '\201C';
+  font-family: var(--ff-display); font-size: 120px; font-weight: 300;
+  color: var(--gold); opacity: .15; line-height: .7;
+  position: absolute; top: 32px; left: 32px;
+}
+.testimonial-stars {
+  display: flex; gap: 4px; margin-bottom: 24px;
+}
+.star { color: var(--gold); font-size: 14px; }
+.testimonial-text {
+  font-family: var(--ff-display); font-size: 20px; font-weight: 300; font-style: italic;
+  color: var(--champagne); line-height: 1.6; margin-bottom: 36px;
+}
+.testimonial-author {
+  display: flex; align-items: center; gap: 16px;
+}
+.author-avatar {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: linear-gradient(135deg, rgba(196,148,58,.3), rgba(196,148,58,.1));
+  border: 1px solid rgba(196,148,58,.3);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--ff-display); font-size: 18px; color: var(--gold);
+}
+.author-name {
+  font-family: var(--ff-body); font-size: 14px; font-weight: 500; color: var(--champagne);
+}
+.author-event {
+  font-family: var(--ff-body); font-size: 11px; letter-spacing: .1em;
+  color: var(--stone-light); margin-top: 3px;
+}
+
+/* Scroll testimonials */
+.testimonials-scroll { overflow: hidden; }
+.testimonials-scroll-inner {
+  display: flex; gap: 32px;
+  animation: scrollTestimonials 30s linear infinite;
+}
+.testimonials-scroll-inner:hover { animation-play-state: paused; }
+@keyframes scrollTestimonials {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(calc(-50% - 16px)); }
+}
+
+/* ─── PRICING ─── */
+.pricing { background: var(--cream); padding: 120px 80px; }
+.pricing-header { margin-bottom: 80px; }
+.pricing-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+}
+.pricing-card {
+  background: white; border: 1px solid rgba(196,148,58,.2);
+  padding: 56px 44px; position: relative;
+  transition: transform .3s, box-shadow .3s;
+}
+.pricing-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 64px rgba(196,148,58,.12);
+}
+.pricing-card.featured {
+  background: var(--noir);
+  border-color: var(--gold);
+}
+.pricing-badge {
+  position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+  background: var(--gold); color: var(--noir);
+  font-family: var(--ff-body); font-size: 9px; font-weight: 700;
+  letter-spacing: .25em; text-transform: uppercase;
+  padding: 6px 20px;
+}
+.pricing-tier {
+  font-family: var(--ff-body); font-size: 10px; font-weight: 600;
+  letter-spacing: .35em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 20px;
+}
+.pricing-name {
+  font-family: var(--ff-display); font-size: 36px; font-weight: 300;
+  color: var(--noir); margin-bottom: 8px;
+}
+.pricing-card.featured .pricing-name { color: var(--champagne); }
+.pricing-price {
+  font-family: var(--ff-display); font-size: 56px; font-weight: 300;
+  color: var(--gold); line-height: 1; margin: 28px 0 4px;
+}
+.pricing-price sup {
+  font-size: 24px; vertical-align: super; margin-right: 2px;
+}
+.pricing-period {
+  font-family: var(--ff-body); font-size: 12px; color: var(--stone);
+  letter-spacing: .1em; margin-bottom: 40px;
+}
+.pricing-card.featured .pricing-period { color: var(--stone-light); }
+.pricing-divider {
+  height: 1px; background: rgba(196,148,58,.15); margin: 0 0 36px;
+}
+.pricing-features-list { list-style: none; display: flex; flex-direction: column; gap: 14px; margin-bottom: 44px; }
+.pricing-feature {
+  display: flex; align-items: center; gap: 12px;
+  font-family: var(--ff-body); font-size: 14px; font-weight: 300;
+  color: var(--stone);
+}
+.pricing-card.featured .pricing-feature { color: var(--stone-light); }
+.pricing-feature::before {
+  content: ''; width: 16px; height: 1px; background: var(--gold); flex-shrink: 0;
+}
+.btn-pricing {
+  width: 100%; font-family: var(--ff-body); font-size: 11px; font-weight: 600;
+  letter-spacing: .22em; text-transform: uppercase;
+  padding: 16px; border: 1px solid var(--gold); cursor: pointer;
+  background: transparent; color: var(--gold);
+  transition: background .25s, color .25s;
+}
+.btn-pricing:hover { background: var(--gold); color: var(--noir); }
+.pricing-card.featured .btn-pricing {
+  background: var(--gold); color: var(--noir); border-color: var(--gold);
+}
+.pricing-card.featured .btn-pricing:hover {
+  background: var(--gold-light);
+}
+
+/* ─── CONTACT ─── */
+.contact { background: var(--ivory); padding: 120px 80px; }
+.contact-inner {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: start;
+}
+.contact-info {}
+.contact-detail {
+  margin-top: 48px; display: flex; flex-direction: column; gap: 28px;
+}
+.contact-item {
+  display: flex; gap: 20px; align-items: flex-start;
+}
+.contact-item-icon {
+  width: 44px; height: 44px; border: 1px solid rgba(196,148,58,.3);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  color: var(--gold);
+}
+.contact-item-label {
+  font-family: var(--ff-body); font-size: 10px; letter-spacing: .25em;
+  text-transform: uppercase; color: var(--stone); margin-bottom: 4px;
+}
+.contact-item-value {
+  font-family: var(--ff-body); font-size: 15px; font-weight: 400; color: var(--noir);
+}
+
+.contact-form { display: flex; flex-direction: column; gap: 24px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.form-group { display: flex; flex-direction: column; gap: 8px; }
+.form-label {
+  font-family: var(--ff-body); font-size: 10px; letter-spacing: .28em;
+  text-transform: uppercase; color: var(--stone); font-weight: 500;
+}
+.form-input, .form-select, .form-textarea {
+  font-family: var(--ff-body); font-size: 15px; font-weight: 300;
+  color: var(--noir); background: white;
+  border: 1px solid rgba(196,148,58,.25); padding: 16px 20px;
+  outline: none; transition: border-color .25s;
+  appearance: none;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--gold);
+}
+.form-textarea { resize: vertical; min-height: 140px; }
+.form-select { cursor: pointer; }
+.btn-submit {
+  font-family: var(--ff-body); font-size: 12px; font-weight: 600;
+  letter-spacing: .22em; text-transform: uppercase;
+  color: var(--noir); background: var(--gold);
+  border: none; padding: 20px 48px; cursor: pointer;
+  width: 100%; transition: background .25s, transform .2s;
+}
+.btn-submit:hover { background: var(--gold-light); transform: translateY(-2px); }
+
+/* ─── FOOTER ─── */
+footer {
+  background: var(--noir); color: var(--stone-light);
+  padding: 72px 80px 40px;
+}
+.footer-top {
+  display: grid; grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 80px; padding-bottom: 60px;
+  border-bottom: 1px solid rgba(196,148,58,.1);
+}
+.footer-brand {}
+.footer-logo {
+  font-family: var(--ff-display); font-size: 32px; font-weight: 300;
+  letter-spacing: .18em; color: var(--champagne);
+  text-transform: uppercase; margin-bottom: 20px;
+}
+.footer-logo span { color: var(--gold); }
+.footer-tagline {
+  font-family: var(--ff-display); font-style: italic; font-size: 16px;
+  color: var(--stone-light); line-height: 1.6;
+}
+.footer-col-title {
+  font-family: var(--ff-body); font-size: 10px; letter-spacing: .3em;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 24px;
+}
+.footer-links { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.footer-links a {
+  font-family: var(--ff-body); font-size: 14px; font-weight: 300;
+  color: var(--stone-light); text-decoration: none;
+  transition: color .2s;
+}
+.footer-links a:hover { color: var(--champagne); }
+.footer-bottom {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 32px;
+}
+.footer-copy {
+  font-family: var(--ff-body); font-size: 12px; letter-spacing: .08em;
+  color: rgba(139,123,104,.5);
+}
+.footer-social { display: flex; gap: 20px; }
+.social-link {
+  width: 36px; height: 36px; border: 1px solid rgba(196,148,58,.2);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--stone-light); font-size: 13px; text-decoration: none;
+  transition: border-color .2s, color .2s;
+}
+.social-link:hover { border-color: var(--gold); color: var(--gold); }
+
+/* ─── GOLD ORNAMENT ─── */
+.ornament {
+  text-align: center; padding: 60px 0;
+  font-family: var(--ff-display); font-size: 18px; letter-spacing: .5em;
+  color: rgba(196,148,58,.3);
+}
+
+
+/* ─── WHATSAPP FLOAT ─── */
+.wa-float {
+  position: fixed; bottom: 32px; right: 32px; z-index: 9000;
+  width: 60px; height: 60px; border-radius: 50%;
+  background: #25D366;
+  box-shadow: 0 4px 24px rgba(37,211,102,.5);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; text-decoration: none;
+  animation: waPulse 2.5s ease-in-out infinite;
+  transition: transform .2s, box-shadow .2s;
+}
+.wa-float:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 32px rgba(37,211,102,.7);
+  animation: none;
+}
+.wa-tooltip {
+  position: absolute; right: 72px; white-space: nowrap;
+  background: var(--noir); color: var(--champagne);
+  font-family: var(--ff-body); font-size: 12px; font-weight: 400;
+  padding: 8px 16px; pointer-events: none;
+  opacity: 0; transform: translateX(8px);
+  transition: opacity .25s, transform .25s;
+}
+.wa-float:hover .wa-tooltip { opacity: 1; transform: translateX(0); }
+@keyframes waPulse {
+  0%, 100% { box-shadow: 0 4px 24px rgba(37,211,102,.5); }
+  50% { box-shadow: 0 4px 40px rgba(37,211,102,.8), 0 0 0 12px rgba(37,211,102,.1); }
+}
+
+/* ─── LIGHTBOX ─── */
+.lightbox-overlay {
+  position: fixed; inset: 0; z-index: 9998;
+  background: rgba(10,8,5,.96);
+  backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity .35s;
+}
+.lightbox-overlay.active { opacity: 1; pointer-events: all; }
+.lightbox-img-wrap {
+  position: relative; max-width: 88vw; max-height: 88vh;
+  display: flex; align-items: center; justify-content: center;
+}
+.lightbox-img-wrap img {
+  max-width: 88vw; max-height: 80vh;
+  object-fit: contain; display: block;
+  border: 1px solid rgba(255,187,0,.15);
+  transition: opacity .3s;
+}
+.lightbox-caption {
+  position: absolute; bottom: -44px; left: 0; right: 0; text-align: center;
+  font-family: var(--ff-display); font-style: italic; font-size: 18px;
+  color: var(--champagne); letter-spacing: .05em;
+}
+.lightbox-btn {
+  position: fixed; top: 50%; transform: translateY(-50%);
+  width: 52px; height: 52px;
+  border: 1px solid rgba(255,187,0,.3); background: rgba(15,12,9,.7);
+  color: var(--gold); font-size: 20px;
+  display: none; align-items: center; justify-content: center;
+  cursor: pointer; z-index: 9999;
+  transition: background .2s, border-color .2s;
+}
+.lightbox-overlay.active ~ .lightbox-btn { display: flex; }
+.lightbox-btn:hover { background: rgba(255,187,0,.15); border-color: var(--gold); }
+.lightbox-prev { left: 24px; }
+.lightbox-next { right: 24px; }
+.lightbox-close {
+  position: fixed; top: 24px; right: 28px; z-index: 9999;
+  width: 48px; height: 48px;
+  border: 1px solid rgba(255,187,0,.3); background: rgba(15,12,9,.7);
+  color: var(--champagne); font-size: 22px;
+  display: none; align-items: center; justify-content: center;
+  cursor: pointer; transition: background .2s;
+}
+.lightbox-overlay.active ~ .lightbox-close { display: flex; }
+.lightbox-overlay.active ~ .lightbox-counter { display: block; }
+.lightbox-close:hover { background: rgba(255,187,0,.15); }
+.lightbox-counter {
+  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+  font-family: var(--ff-body); font-size: 11px; letter-spacing: .25em;
+  text-transform: uppercase; color: var(--stone-light); z-index: 9999;
+  display: none;
+}
+
+/* ─── FORM SUCCESS ─── */
+#formSuccess { display: none; }
+
+
+/* ─── COTIZADOR ─── */
+.cotizador { background: var(--noir); padding: 120px 80px; }
+.cotizador-inner {
+  max-width: 1100px; margin: 0 auto;
+  display: grid; grid-template-columns: 1.2fr 1fr; gap: 80px; align-items: start;
+}
+.cotizador-form { }
+.cotizador-header { margin-bottom: 52px; }
+.cotizador-header .section-title { color: var(--champagne); }
+
+.cot-group { margin-bottom: 32px; }
+.cot-label {
+  display: block; font-family: var(--ff-body); font-size: 10px; font-weight: 600;
+  letter-spacing: .3em; text-transform: uppercase; color: var(--stone-light);
+  margin-bottom: 12px;
+}
+.cot-options { display: flex; gap: 10px; flex-wrap: wrap; }
+.cot-option {
+  font-family: var(--ff-body); font-size: 12px; font-weight: 500;
+  letter-spacing: .08em; color: var(--stone-light);
+  border: 1px solid rgba(255,187,0,.2); background: transparent;
+  padding: 10px 20px; cursor: pointer;
+  transition: all .2s;
+}
+.cot-option:hover { border-color: rgba(255,187,0,.5); color: var(--champagne); }
+.cot-option.active { border-color: var(--gold); color: var(--noir); background: var(--gold); font-weight: 600; }
+
+.cot-slider-wrap { position: relative; }
+.cot-slider {
+  width: 100%; -webkit-appearance: none; appearance: none;
+  height: 2px; background: rgba(255,187,0,.2); outline: none; cursor: pointer;
+}
+.cot-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%;
+  background: var(--gold); border: 2px solid var(--noir);
+  box-shadow: 0 0 0 3px rgba(255,187,0,.3); cursor: pointer;
+}
+.cot-slider-val {
+  font-family: var(--ff-display); font-size: 32px; font-weight: 300;
+  color: var(--gold); margin-bottom: 12px; display: block;
+}
+.cot-slider-range {
+  display: flex; justify-content: space-between; margin-top: 8px;
+  font-family: var(--ff-body); font-size: 10px; letter-spacing: .1em;
+  color: rgba(184,168,152,.4);
+}
+
+.cot-checks { display: flex; flex-direction: column; gap: 14px; }
+.cot-check {
+  display: flex; align-items: center; gap: 14px; cursor: pointer;
+}
+.cot-check input { display: none; }
+.cot-check-box {
+  width: 20px; height: 20px; border: 1px solid rgba(255,187,0,.3);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  transition: background .2s, border-color .2s;
+}
+.cot-check input:checked + .cot-check-box {
+  background: var(--gold); border-color: var(--gold);
+}
+.cot-check input:checked + .cot-check-box::after {
+  content: '✓'; color: var(--noir); font-size: 12px; font-weight: 700;
+}
+.cot-check-text { font-family: var(--ff-body); font-size: 14px; font-weight: 300; color: var(--stone-light); }
+.cot-check-price { margin-left: auto; font-family: var(--ff-body); font-size: 12px; color: var(--gold); letter-spacing: .05em; }
+
+/* Result card */
+.cotizador-result {
+  position: sticky; top: 100px;
+  background: rgba(255,255,255,.04); border: 1px solid rgba(255,187,0,.2);
+  padding: 48px 40px;
+}
+.cot-result-title {
+  font-family: var(--ff-body); font-size: 10px; font-weight: 600;
+  letter-spacing: .3em; text-transform: uppercase; color: var(--gold);
+  margin-bottom: 32px;
+}
+.cot-result-line {
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: var(--ff-body); font-size: 13px; font-weight: 300;
+  color: var(--stone-light); padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+}
+.cot-result-line:last-of-type { border-bottom: none; }
+.cot-result-line span:last-child { color: var(--champagne); }
+.cot-result-divider { height: 1px; background: rgba(255,187,0,.2); margin: 24px 0; }
+.cot-result-total-label {
+  font-family: var(--ff-body); font-size: 10px; letter-spacing: .3em;
+  text-transform: uppercase; color: var(--stone-light); margin-bottom: 8px;
+}
+.cot-result-total {
+  font-family: var(--ff-display); font-size: 56px; font-weight: 300;
+  color: var(--gold); line-height: 1; margin-bottom: 4px;
+}
+.cot-result-igv {
+  font-family: var(--ff-body); font-size: 11px; color: var(--stone-light);
+  letter-spacing: .1em; margin-bottom: 36px;
+}
+.btn-cot-cta {
+  width: 100%; font-family: var(--ff-body); font-size: 11px; font-weight: 600;
+  letter-spacing: .22em; text-transform: uppercase;
+  color: var(--noir); background: var(--gold);
+  border: none; padding: 18px; cursor: pointer;
+  transition: background .25s, transform .2s;
+}
+.btn-cot-cta:hover { background: var(--gold-light); transform: translateY(-2px); }
+.cot-disclaimer {
+  font-family: var(--ff-body); font-size: 11px; color: rgba(184,168,152,.5);
+  text-align: center; margin-top: 16px; line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .cotizador { padding: 80px 24px; }
+  .cotizador-inner { grid-template-columns: 1fr; gap: 48px; }
+  .cotizador-result { position: static; }
+}
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+  opacity: 0; transform: translateY(32px);
+  transition: opacity .7s cubic-bezier(.4,0,.2,1), transform .7s cubic-bezier(.4,0,.2,1);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-delay-1 { transition-delay: .1s; }
+.reveal-delay-2 { transition-delay: .2s; }
+.reveal-delay-3 { transition-delay: .3s; }
+.reveal-delay-4 { transition-delay: .4s; }
+
+/* Mobile */
+@media (max-width: 900px) {
+  nav { padding: 20px 24px; }
+  nav.scrolled { padding: 14px 24px; }
+  .nav-links { display: none; }
+  .hero-photo-frame { display: none; }
+  .hero-content { width: 100%; padding: 0 24px; }
+  .hero-stats { left: 24px; bottom: 32px; gap: 32px; }
+  .features { padding: 80px 24px; }
+  .features-header { flex-direction: column; align-items: flex-start; gap: 24px; }
+  .features-grid { grid-template-columns: 1fr 1fr; }
+  .gallery { padding: 80px 24px; }
+  .gallery-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+  .gallery-item { grid-column: auto !important; grid-row: auto !important; height: 200px; }
+  .event-types { padding: 80px 24px; }
+  .event-types-inner { grid-template-columns: 1fr; gap: 48px; }
+  .testimonials { padding: 80px 24px; }
+  .pricing { padding: 80px 24px; }
+  .pricing-grid { grid-template-columns: 1fr; }
+  .contact { padding: 80px 24px; }
+  .contact-inner { grid-template-columns: 1fr; gap: 56px; }
+  footer { padding: 60px 24px 32px; }
+  .footer-top { grid-template-columns: 1fr; gap: 40px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo">SALON DE EVENTOS</div>
+  <ul class="nav-links">
+    <li><a href="#caracteristicas">El Espacio</a></li>
+    <li><a href="#galeria">Galería</a></li>
+    <li><a href="#eventos">Eventos</a></li>
+    <li><a href="#cotizador">Cotizador</a></li>
+    <li><a href="#paquetes">Paquetes</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+  </ul>
+  <button class="nav-cta" onclick="document.getElementById('contacto').scrollIntoView({behavior:'smooth'})">Reserva tu fecha</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-rule"></div>
+
+  <div class="hero-photo-frame">
+    <img class="hero-photo" src="uploads/5.avif" alt="Fachada del salón de eventos" style="width:100%;height:100%;object-fit:cover;">
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">Comas, Lima · Desde 2009</div>
+    <h1 class="hero-title">
+      Donde los<br>momentos se<br>vuelven <em>eternos</em>
+    </h1>
+    <p class="hero-sub">
+      El escenario perfecto para celebrar lo que más importa. Un espacio premium en el corazón de Lima, diseñado para eventos que trascienden.
+    </p>
+    <div class="hero-actions">
+      <a href="#contacto" class="btn-primary">Reserva tu fecha</a>
+      <a href="#galeria" class="btn-ghost">Ver el espacio</a>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-num">800</div>
+      <div class="stat-label">Invitados máx.</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">15</div>
+      <div class="stat-label">Años de experiencia</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">2K+</div>
+      <div class="stat-label">Eventos realizados</div>
+    </div>
+  </div>
+</section>
+
+<!-- ORNAMENT -->
+<div class="ornament">— ✦ —</div>
+
+<!-- CARACTERÍSTICAS -->
+<section class="features" id="caracteristicas">
+  <div class="features-header">
+    <div>
+      <div class="section-eyebrow" style="color:var(--gold)">El espacio ideal</div>
+      <h2 class="section-title" style="color:var(--champagne)">Todo lo que<br>tu evento <em>necesita</em></h2>
+    </div>
+    <p class="section-sub" style="color:var(--stone-light); max-width:360px; text-align:right">
+      Infraestructura de clase mundial en Lima, con atención personalizada y los más altos estándares de servicio.
+    </p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card reveal">
+      <svg class="feature-icon" viewBox="0 0 52 52" fill="none">
+        <path d="M8 44V20l18-12 18 12v24M18 44V32h16v12" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M26 24v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <div class="feature-num">01</div>
+      <div class="feature-title">Gran Capacidad</div>
+      <div class="feature-desc">Ambientes modulares para 50 hasta 800 invitados. Salones independientes que se fusionan según la escala de tu evento.</div>
+      <div class="feature-detail">Hasta 800 pax</div>
+    </div>
+    <div class="feature-card reveal reveal-delay-1">
+      <svg class="feature-icon" viewBox="0 0 52 52" fill="none">
+        <circle cx="26" cy="22" r="10" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M26 32v8M26 12V8M13 22H8M44 22h-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="26" cy="22" r="3" fill="currentColor"/>
+      </svg>
+      <div class="feature-num">02</div>
+      <div class="feature-title">Ubicación Privilegiada</div>
+      <div class="feature-desc">En Comas, con fácil acceso desde toda Lima. Accesible desde todas las zonas de la ciudad con referencia en avenidas principales.</div>
+      <div class="feature-detail">Miraflores, Lima</div>
+    </div>
+    <div class="feature-card reveal reveal-delay-2">
+      <svg class="feature-icon" viewBox="0 0 52 52" fill="none">
+        <path d="M10 36V20h6l4-8h12l4 8h6v16H10z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        <circle cx="18" cy="28" r="3" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="34" cy="28" r="3" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M22 32h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <div class="feature-num">03</div>
+      <div class="feature-title">Catering Premium</div>
+      <div class="feature-desc">Menús diseñados por chefs de la gastronomía peruana. Buffets, cenas de gala, coctelería y pastelería artesanal a medida.</div>
+      <div class="feature-detail">Cocina peruana · Gourmet</div>
+    </div>
+    <div class="feature-card reveal reveal-delay-3">
+      <svg class="feature-icon" viewBox="0 0 52 52" fill="none">
+        <rect x="8" y="28" width="36" height="14" stroke="currentColor" stroke-width="1.5" rx="1"/>
+        <path d="M16 28v-8a4 4 0 014-4h12a4 4 0 014 4v8" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="19" cy="35" r="2.5" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="33" cy="35" r="2.5" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M22 35h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <div class="feature-num">04</div>
+      <div class="feature-title">Estacionamiento</div>
+      <div class="feature-desc">Playa de estacionamiento propio con capacidad para 200 vehículos, vigilancia 24/7 y servicio de valet parking disponible.</div>
+      <div class="feature-detail">200 vehículos · Valet</div>
+    </div>
+  </div>
+</section>
+
+<!-- GALERÍA -->
+<section class="gallery" id="galeria">
+  <div class="gallery-header reveal">
+    <div class="section-eyebrow">Nuestros espacios</div>
+    <h2 class="section-title">Una vista de <em>Salón de Eventos</em></h2>
+  </div>
+  <div class="gallery-grid">
+    <div class="gallery-item reveal" onclick="openLightbox(0)">
+      <img src="uploads/1.avif" alt="Cóctel & Celebración" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s cubic-bezier(.4,0,.2,1);" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+    </div>
+    <div class="gallery-item reveal reveal-delay-1" onclick="openLightbox(1)">
+      <img src="uploads/4.avif" alt="Jardín con Pérgola" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s cubic-bezier(.4,0,.2,1);" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+    </div>
+    <div class="gallery-item reveal reveal-delay-2" onclick="openLightbox(2)">
+      <img src="uploads/3.avif" alt="Mesa de Honor — Bodas" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s cubic-bezier(.4,0,.2,1);" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+    </div>
+    <div class="gallery-item reveal reveal-delay-1" onclick="openLightbox(3)">
+      <img src="uploads/2.avif" alt="Salón Quinceañero" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s cubic-bezier(.4,0,.2,1);" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+    </div>
+    <div class="gallery-item reveal reveal-delay-2" onclick="openLightbox(4)">
+      <img src="uploads/1.avif" alt="Ambiente del Salón" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s cubic-bezier(.4,0,.2,1);" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+    </div>
+  </div>
+</section>
+
+<!-- TIPOS DE EVENTOS -->
+<section class="event-types" id="eventos">
+  <div class="event-types-inner">
+    <div class="event-types-left reveal">
+      <div class="section-eyebrow">Especialidades</div>
+      <h2 class="section-title">Cada celebración,<br>una <em>obra maestra</em></h2>
+      <p class="section-sub">Desde bodas íntimas hasta grandes galas corporativas, adaptamos cada rincón de Salón de Eventos a tu visión y estilo.</p>
+      <br><br>
+      <a href="#contacto" class="btn-primary">Consulta disponibilidad</a>
+    </div>
+    <div class="event-types-right">
+      <div class="event-card reveal">
+        <span class="event-card-icon">💍</span>
+        <div class="event-card-title">Bodas</div>
+        <div class="event-card-desc">El día más especial merece el escenario más bello. Coordinación integral y decoración personalizada.</div>
+      </div>
+      <div class="event-card reveal reveal-delay-1">
+        <span class="event-card-icon">🤝</span>
+        <div class="event-card-title">Corporativos</div>
+        <div class="event-card-desc">Conferencias, lanzamientos y cenas ejecutivas con tecnología audiovisual de última generación.</div>
+      </div>
+      <div class="event-card reveal reveal-delay-2">
+        <span class="event-card-icon">🌸</span>
+        <div class="event-card-title">Quinceañeros</div>
+        <div class="event-card-desc">Una noche mágica e irrepetible para ella. Temáticas exclusivas y producción completa del evento.</div>
+      </div>
+      <div class="event-card reveal reveal-delay-3">
+        <span class="event-card-icon">🥂</span>
+        <div class="event-card-title">Cócteles</div>
+        <div class="event-card-desc">Celebraciones íntimas con la elegancia que caracteriza a Salón de Eventos. Servicio de mixología premium.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIOS -->
+<section class="testimonials">
+  <div class="testimonials-header">
+    <div class="section-eyebrow">Testimonios</div>
+    <h2 class="section-title" style="color:var(--champagne)">Lo que dicen<br>nuestros <em>clientes</em></h2>
+  </div>
+  <div class="testimonials-scroll">
+    <div class="testimonials-scroll-inner">
+      <!-- Set 1 -->
+      <div class="testimonial-card">
+        <div class="testimonial-stars">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <p class="testimonial-text">"Salón de Eventos superó todas nuestras expectativas. Nuestra boda fue exactamente lo que soñamos durante años. El equipo es excepcional."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">V</div>
+          <div>
+            <div class="author-name">Valeria & Marco Salaverry</div>
+            <div class="author-event">Boda · Marzo 2025</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <p class="testimonial-text">"Realizamos nuestra conferencia anual con más de 400 ejecutivos. La logística fue impecable y el catering, simplemente extraordinario."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">R</div>
+          <div>
+            <div class="author-name">Ricardo Bustamante</div>
+            <div class="author-event">Evento Corporativo · Enero 2025</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <p class="testimonial-text">"El quinceañero de mi hija fue una noche de cuento de hadas. La decoración, la música, la atención... todo fue perfecto. ¡Gracias, Salón de Eventos!"</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">C</div>
+          <div>
+            <div class="author-name">Carmen de la Rosa</div>
+            <div class="author-event">Quinceañero · Diciembre 2024</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <p class="testimonial-text">"Cada detalle estuvo cuidado al milímetro. Nuestra cena de gala fue recordada por todos los invitados como un evento inolvidable."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">A</div>
+          <div>
+            <div class="author-name">Alejandra Mendivil</div>
+            <div class="author-event">Cóctel Corporativo · Nov 2024</div>
+          </div>
+        </div>
+      </div>
+      <!-- Duplicados para loop infinito -->
+      <div class="testimonial-card">
+        <div class="testimonial-stars">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <p class="testimonial-text">"Salón de Eventos superó todas nuestras expectativas. Nuestra boda fue exactamente lo que soñamos durante años. El equipo es excepcional."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">V</div>
+          <div>
+            <div class="author-name">Valeria & Marco Salaverry</div>
+            <div class="author-event">Boda · Marzo 2025</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <p class="testimonial-text">"Realizamos nuestra conferencia anual con más de 400 ejecutivos. La logística fue impecable y el catering, simplemente extraordinario."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">R</div>
+          <div>
+            <div class="author-name">Ricardo Bustamante</div>
+            <div class="author-event">Evento Corporativo · Enero 2025</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <p class="testimonial-text">"El quinceañero de mi hija fue una noche de cuento de hadas. La decoración, la música, la atención... todo fue perfecto. ¡Gracias, Salón de Eventos!"</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">C</div>
+          <div>
+            <div class="author-name">Carmen de la Rosa</div>
+            <div class="author-event">Quinceañero · Diciembre 2024</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <p class="testimonial-text">"Cada detalle estuvo cuidado al milímetro. Nuestra cena de gala fue recordada por todos los invitados como un evento inolvidable."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">A</div>
+          <div>
+            <div class="author-name">Alejandra Mendivil</div>
+            <div class="author-event">Cóctel Corporativo · Nov 2024</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- COTIZADOR -->
+<section class="cotizador" id="cotizador">
+  <div class="cotizador-inner">
+    <div class="cotizador-form">
+      <div class="cotizador-header reveal">
+        <div class="section-eyebrow" style="color:var(--gold)">Cotizador</div>
+        <h2 class="section-title">Calcula tu <em>evento</em></h2>
+        <p class="section-sub" style="color:var(--stone-light);margin-top:16px">Obtén un estimado instantáneo para tu celebración. Sin compromiso.</p>
+      </div>
+
+      <div class="cot-group reveal">
+        <label class="cot-label">Tipo de evento</label>
+        <div class="cot-options" id="cot-tipo">
+          <button class="cot-option active" data-tipo="boda" onclick="setCotTipo(this)">Boda</button>
+          <button class="cot-option" data-tipo="corporativo" onclick="setCotTipo(this)">Corporativo</button>
+          <button class="cot-option" data-tipo="quinceanero" onclick="setCotTipo(this)">Quinceañero</button>
+          <button class="cot-option" data-tipo="coctel" onclick="setCotTipo(this)">Cóctel</button>
+        </div>
+      </div>
+
+      <div class="cot-group reveal">
+        <label class="cot-label">Número de personas</label>
+        <span class="cot-slider-val" id="cot-pax-val">150 personas</span>
+        <div class="cot-slider-wrap">
+          <input type="range" class="cot-slider" id="cot-pax" min="50" max="500" step="10" value="150" oninput="calcCotizador()">
+        </div>
+        <div class="cot-slider-range"><span>50 pax</span><span>500 pax</span></div>
+      </div>
+
+      <div class="cot-group reveal">
+        <label class="cot-label">Día del evento</label>
+        <div class="cot-options" id="cot-dia">
+          <button class="cot-option active" data-dia="semana" onclick="setCotDia(this)">Lunes – Jueves</button>
+          <button class="cot-option" data-dia="finde" onclick="setCotDia(this)">Viernes – Dom / Feriados</button>
+        </div>
+      </div>
+
+      <div class="cot-group reveal">
+        <label class="cot-label">Servicios adicionales</label>
+        <div class="cot-checks">
+          <label class="cot-check">
+            <input type="checkbox" id="cot-catering" onchange="calcCotizador()">
+            <span class="cot-check-box"></span>
+            <span class="cot-check-text">Catering premium</span>
+            <span class="cot-check-price">+S/ 45 × pax</span>
+          </label>
+          <label class="cot-check">
+            <input type="checkbox" id="cot-deco" onchange="calcCotizador()">
+            <span class="cot-check-box"></span>
+            <span class="cot-check-text">Decoración floral</span>
+            <span class="cot-check-price">+S/ 800</span>
+          </label>
+          <label class="cot-check">
+            <input type="checkbox" id="cot-dj" onchange="calcCotizador()">
+            <span class="cot-check-box"></span>
+            <span class="cot-check-text">DJ & sonido profesional</span>
+            <span class="cot-check-price">+S/ 600</span>
+          </label>
+          <label class="cot-check">
+            <input type="checkbox" id="cot-foto" onchange="calcCotizador()">
+            <span class="cot-check-box"></span>
+            <span class="cot-check-text">Fotógrafo profesional</span>
+            <span class="cot-check-price">+S/ 900</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="cotizador-result reveal reveal-delay-2">
+      <div class="cot-result-title">Tu estimado</div>
+      <div id="cot-breakdown">
+        <div class="cot-result-line"><span>Alquiler del salón</span><span id="cr-base">S/ 0</span></div>
+        <div class="cot-result-line" id="cr-catering-row" style="display:none"><span>Catering</span><span id="cr-catering">S/ 0</span></div>
+        <div class="cot-result-line" id="cr-deco-row" style="display:none"><span>Decoración</span><span>S/ 800</span></div>
+        <div class="cot-result-line" id="cr-dj-row" style="display:none"><span>DJ & sonido</span><span>S/ 600</span></div>
+        <div class="cot-result-line" id="cr-foto-row" style="display:none"><span>Fotógrafo</span><span>S/ 900</span></div>
+        <div class="cot-result-line"><span>Subtotal</span><span id="cr-sub">S/ 0</span></div>
+        <div class="cot-result-line"><span>IGV (18%)</span><span id="cr-igv">S/ 0</span></div>
+      </div>
+      <div class="cot-result-divider"></div>
+      <div class="cot-result-total-label">Total estimado con IGV</div>
+      <div class="cot-result-total" id="cr-total">S/ 0</div>
+      <div class="cot-result-igv">Precio referencial · sujeto a disponibilidad</div>
+      <button class="btn-cot-cta" onclick="cotizadorCTA()">Quiero este paquete →</button>
+      <p class="cot-disclaimer">Te enviaremos una cotización formal en menos de 24 horas</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- PRECIOS -->
+<section class="pricing" id="paquetes">
+  <div class="pricing-header reveal">
+    <div class="section-eyebrow">Paquetes</div>
+    <h2 class="section-title">Elige tu <em>experiencia</em></h2>
+    <p class="section-sub">Tres paquetes diseñados para cada tipo de celebración. Todos incluyen coordinación completa y atención personalizada.</p>
+  </div>
+  <div class="pricing-grid">
+    <div class="pricing-card reveal">
+      <div class="pricing-tier">Básico</div>
+      <div class="pricing-name">Esencial</div>
+      <div class="pricing-price"><sup>S/</sup>8,500</div>
+      <div class="pricing-period">por evento · hasta 100 personas</div>
+      <div class="pricing-divider"></div>
+      <ul class="pricing-features-list">
+        <li class="pricing-feature">Salón principal — 6 horas</li>
+        <li class="pricing-feature">Menú de 3 tiempos</li>
+        <li class="pricing-feature">Iluminación estándar</li>
+        <li class="pricing-feature">Estacionamiento incluido</li>
+        <li class="pricing-feature">Coordinador de evento</li>
+        <li class="pricing-feature">Mobiliario y mantelería</li>
+      </ul>
+      <button class="btn-pricing" onclick="preseleccionarPaquete('Básico — Esencial')">Quiero este paquete</button>
+    </div>
+    <div class="pricing-card featured reveal reveal-delay-1">
+      <div class="pricing-badge">Más popular</div>
+      <div class="pricing-tier">Estándar</div>
+      <div class="pricing-name">Premium</div>
+      <div class="pricing-price"><sup>S/</sup>18,900</div>
+      <div class="pricing-period">por evento · hasta 300 personas</div>
+      <div class="pricing-divider" style="background:rgba(255,187,0,.2)"></div>
+      <ul class="pricing-features-list">
+        <li class="pricing-feature">Salones combinados — 8 horas</li>
+        <li class="pricing-feature">Menú gourmet de 5 tiempos</li>
+        <li class="pricing-feature">Iluminación ambiental LED</li>
+        <li class="pricing-feature">Barra libre de bebidas</li>
+        <li class="pricing-feature">Decoración floral incluida</li>
+        <li class="pricing-feature">Valet parking</li>
+        <li class="pricing-feature">DJ y sonido profesional</li>
+      </ul>
+      <button class="btn-pricing" onclick="preseleccionarPaquete('Estándar — Premium')">Quiero este paquete</button>
+    </div>
+    <div class="pricing-card reveal reveal-delay-2">
+      <div class="pricing-tier">Premium</div>
+      <div class="pricing-name">Diamante</div>
+      <div class="pricing-price"><sup>S/</sup>38,000</div>
+      <div class="pricing-period">por evento · hasta 800 personas</div>
+      <div class="pricing-divider"></div>
+      <ul class="pricing-features-list">
+        <li class="pricing-feature">Venue completo — 12 horas</li>
+        <li class="pricing-feature">Chef ejecutivo personalizado</li>
+        <li class="pricing-feature">Producción audiovisual premium</li>
+        <li class="pricing-feature">Barra premium open bar</li>
+        <li class="pricing-feature">Wedding/Event planner dedicado</li>
+        <li class="pricing-feature">Fotógrafo y videógrafo</li>
+        <li class="pricing-feature">Orquesta o banda en vivo</li>
+      </ul>
+      <button class="btn-pricing" onclick="preseleccionarPaquete('Premium — Diamante')">Quiero este paquete</button>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section class="contact" id="contacto">
+  <div class="contact-inner">
+    <div class="contact-info reveal">
+      <div class="section-eyebrow">Contáctanos</div>
+      <h2 class="section-title">Reserva tu<br><em>fecha especial</em></h2>
+      <p class="section-sub">Nuestro equipo de coordinadores está listo para hacer realidad el evento que siempre imaginaste.</p>
+      <div class="contact-detail">
+        <div class="contact-item">
+          <div class="contact-item-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+              <circle cx="12" cy="9" r="2.5"/>
+            </svg>
+          </div>
+          <div>
+            <div class="contact-item-label">Dirección</div>
+            <div class="contact-item-value">Av. Túpac Amaru, Comas, Lima</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-item-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.83 19.79 19.79 0 01.04 1.18 2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14v2.92z"/>
+            </svg>
+          </div>
+          <div>
+            <div class="contact-item-label">Teléfono</div>
+            <div class="contact-item-value">+51 1 610 3200</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-item-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+          </div>
+          <div>
+            <div class="contact-item-label">Email</div>
+            <div class="contact-item-value">eventos@aureolima.com.pe</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <form class="contact-form reveal reveal-delay-1" onsubmit="handleSubmit(event)" id="contactForm">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Nombre completo</label>
+          <input class="form-input" type="text" placeholder="Tu nombre" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Teléfono / WhatsApp</label>
+          <input class="form-input" type="tel" placeholder="+51 999 999 999" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Correo electrónico</label>
+        <input class="form-input" type="email" placeholder="tucorreo@email.com" required>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Tipo de evento</label>
+          <select class="form-select" required>
+            <option value="">Seleccionar...</option>
+            <option value="boda">Boda</option>
+            <option value="corporativo">Evento Corporativo</option>
+            <option value="quinceanero">Quinceañero</option>
+            <option value="coctel">Cóctel</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Número de personas</label>
+          <select class="form-select" required>
+            <option value="">Seleccionar...</option>
+            <option>Hasta 50 personas</option>
+            <option>50 – 150 personas</option>
+            <option>150 – 300 personas</option>
+            <option>300 – 500 personas</option>
+            <option>Más de 500 personas</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Fecha tentativa del evento</label>
+        <input class="form-input" type="date" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Cuéntanos sobre tu evento</label>
+        <textarea class="form-textarea" placeholder="Describe tu visión, necesidades especiales, presupuesto estimado..."></textarea>
+      </div>
+      <div id="formSuccess" style="display:none;background:linear-gradient(135deg,rgba(42,122,58,.12),rgba(42,122,58,.04));border:1px solid rgba(42,122,58,.35);padding:36px 32px;text-align:center;">
+        <div style="width:56px;height:56px;background:rgba(42,122,58,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:24px;color:#2a9a4a;">✓</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:#2a9a4a;margin-bottom:8px">¡Consulta enviada!</div>
+        <div style="font-family:'Jost',sans-serif;font-size:13px;color:var(--stone);margin-bottom:24px;line-height:1.6">Hemos recibido tu solicitud correctamente.<br>Un coordinador se comunicará contigo en <strong>menos de 24 horas</strong>.</div>
+        <div id="formSummary" style="background:rgba(255,255,255,.6);border:1px solid rgba(196,148,58,.2);padding:20px 24px;text-align:left;font-family:'Jost',sans-serif;font-size:13px;color:var(--stone);line-height:1.8;margin-bottom:20px;"></div>
+        <div style="font-family:'Jost',sans-serif;font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:rgba(139,123,104,.5)">Salón de Eventos · Comas, Lima</div>
+      </div>
+      <button type="submit" class="btn-submit" id="submitBtn">Enviar consulta</button>
+    </form>
+  </div>
+</section>
+
+
+<!-- CÓMO LLEGAR -->
+<section id="ubicacion" style="background:var(--noir);padding:120px 80px;">
+  <div style="max-width:1280px;margin:0 auto;">
+    <div style="display:grid;grid-template-columns:1fr 1.6fr;gap:80px;align-items:center;">
+      <div class="reveal">
+        <div class="section-eyebrow" style="color:var(--gold)">Ubicación</div>
+        <h2 class="section-title" style="color:var(--champagne)">¿Cómo <em>llegar?</em></h2>
+        <p class="section-sub" style="color:var(--stone-light);margin-top:20px;">
+          Estamos ubicados en Comas, Lima, con acceso directo desde la Av. Túpac Amaru. Fácil llegada desde cualquier punto de la ciudad.
+        </p>
+        <div style="margin-top:40px;display:flex;flex-direction:column;gap:20px;">
+          <div style="display:flex;gap:16px;align-items:flex-start;">
+            <div style="width:44px;height:44px;border:1px solid rgba(255,187,0,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--gold);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+            </div>
+            <div>
+              <div style="font-family:'Jost',sans-serif;font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--stone-light);margin-bottom:4px;">Dirección</div>
+              <div style="font-family:'Jost',sans-serif;font-size:15px;color:var(--champagne);">Av. Túpac Amaru, Comas, Lima</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:16px;align-items:flex-start;">
+            <div style="width:44px;height:44px;border:1px solid rgba(255,187,0,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--gold);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            </div>
+            <div>
+              <div style="font-family:'Jost',sans-serif;font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--stone-light);margin-bottom:4px;">Horario de atención</div>
+              <div style="font-family:'Jost',sans-serif;font-size:15px;color:var(--champagne);">Lun – Sáb: 9:00 am – 7:00 pm</div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:40px;">
+          <a href="https://maps.google.com/?q=Comas,Lima,Peru" target="_blank"
+             style="display:inline-flex;align-items:center;gap:10px;font-family:'Jost',sans-serif;font-size:12px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--noir);background:var(--gold);padding:16px 32px;text-decoration:none;transition:background .25s;"
+             onmouseover="this.style.background='var(--gold-light)'" onmouseout="this.style.background='var(--gold)'">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+            Ver en Google Maps
+          </a>
+        </div>
+      </div>
+      <div class="reveal reveal-delay-1" style="height:420px;overflow:hidden;border:1px solid rgba(255,187,0,.2);">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3900.6!2d-77.0522!3d-11.9367!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105cfb8bdb7f5d5%3A0x63c1c8a40f0a7b6!2sComas%2C%20Lima!5e0!3m2!1ses!2spe!4v1714000000000"
+          width="100%" height="100%" style="border:0;filter:grayscale(30%) contrast(1.1);"
+          allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="footer-logo">SALON DE EVENTOS</div>
+      <p class="footer-tagline">"El escenario perfecto<br>para los momentos que no se olvidan."</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Navegación</div>
+      <ul class="footer-links">
+        <li><a href="#caracteristicas">El Espacio</a></li>
+        <li><a href="#galeria">Galería de Fotos</a></li>
+        <li><a href="#eventos">Tipos de Eventos</a></li>
+        <li><a href="#paquetes">Paquetes y Precios</a></li>
+        <li><a href="#contacto">Contacto</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Eventos</div>
+      <ul class="footer-links">
+        <li><a href="#contacto">Bodas</a></li>
+        <li><a href="#contacto">Eventos Corporativos</a></li>
+        <li><a href="#contacto">Quinceañeros</a></li>
+        <li><a href="#contacto">Cócteles y Galas</a></li>
+        <li><a href="#contacto">Graduaciones</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2025 Salón de Eventos Salón de Eventos · Lima, Perú · Todos los derechos reservados</div>
+    <div class="footer-social">
+      <a href="#" class="social-link">f</a>
+      <a href="#" class="social-link">in</a>
+      <a href="#" class="social-link">ig</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Nav scroll effect
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// Reveal on scroll
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.12 });
+reveals.forEach(el => observer.observe(el));
+
+// Form handled below
+
+// Tweaks panel
+window.addEventListener('message', e => {
+  if (e.data?.type === '__activate_edit_mode') showTweaks(true);
+  if (e.data?.type === '__deactivate_edit_mode') showTweaks(false);
+});
+window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "goldColor": "#ffbb00",
+  "heroTitle": "Donde los momentos se vuelven eternos",
+  "venueName": "SALON DE EVENTOS",
+  "venueDistrict": "Comas, Lima"
+}/*EDITMODE-END*/;
+
+let tweaks = { ...TWEAK_DEFAULTS };
+let tweaksVisible = false;
+let tweaksPanel = null;
+
+function showTweaks(show) {
+  tweaksVisible = show;
+  if (show && !tweaksPanel) buildTweaksPanel();
+  if (tweaksPanel) tweaksPanel.style.display = show ? 'block' : 'none';
+}
+
+function buildTweaksPanel() {
+  tweaksPanel = document.createElement('div');
+  tweaksPanel.style.cssText = `
+    position:fixed;bottom:24px;right:24px;z-index:9999;
+    width:300px;background:#1a1510;border:1px solid rgba(196,148,58,.4);
+    padding:24px;font-family:'Jost',sans-serif;color:#E8D09A;
+    box-shadow:0 16px 48px rgba(0,0,0,.5);
+  `;
+  tweaksPanel.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <span style="font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#C4943A">Tweaks</span>
+      <button onclick="closeTweaks()" style="background:none;border:none;color:#8B7B68;cursor:pointer;font-size:18px;line-height:1">×</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div>
+        <label style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#8B7B68;display:block;margin-bottom:6px">Color Dorado</label>
+        <input type="color" value="${tweaks.goldColor}" style="width:100%;height:36px;border:1px solid rgba(196,148,58,.3);background:transparent;cursor:pointer;padding:2px"
+          onchange="applyTweak('goldColor', this.value)">
+      </div>
+      <div>
+        <label style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#8B7B68;display:block;margin-bottom:6px">Nombre del Local</label>
+        <input type="text" value="${tweaks.venueName}" style="width:100%;padding:10px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(196,148,58,.2);color:#E8D09A;font-family:inherit;font-size:14px"
+          oninput="applyTweak('venueName', this.value)">
+      </div>
+      <div>
+        <label style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#8B7B68;display:block;margin-bottom:6px">Distrito</label>
+        <input type="text" value="${tweaks.venueDistrict}" style="width:100%;padding:10px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(196,148,58,.2);color:#E8D09A;font-family:inherit;font-size:14px"
+          oninput="applyTweak('venueDistrict', this.value)">
+      </div>
+    </div>
+  `;
+  document.body.appendChild(tweaksPanel);
+}
+
+function closeTweaks() {
+  showTweaks(false);
+  window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
+}
+
+function applyTweak(key, value) {
+  tweaks[key] = value;
+  if (key === 'goldColor') {
+    document.documentElement.style.setProperty('--gold', value);
+  }
+  window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { [key]: value } }, '*');
+}
+
+// ─── LIGHTBOX ───
+const lightboxImages = [
+  { src: 'uploads/1.avif', caption: 'Cóctel & Celebración' },
+  { src: 'uploads/4.avif', caption: 'Jardín con Pérgola' },
+  { src: 'uploads/3.avif', caption: 'Mesa de Honor — Bodas' },
+  { src: 'uploads/2.avif', caption: 'Salón Quinceañero' },
+  { src: 'uploads/1.avif', caption: 'Ambiente del Salón' },
+];
+let lbIndex = 0;
+
+function setLightboxControls(visible) {
+  const d = visible ? 'flex' : 'none';
+  document.querySelectorAll('.lightbox-btn').forEach(b => b.style.display = d);
+  document.querySelector('.lightbox-close').style.display = d;
+  document.getElementById('lightboxCounter').style.display = visible ? 'block' : 'none';
+}
+
+function openLightbox(idx) {
+  lbIndex = idx;
+  updateLightbox();
+  document.getElementById('lightbox').classList.add('active');
+  document.body.style.overflow = 'hidden';
+  setLightboxControls(true);
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('active');
+  document.body.style.overflow = '';
+  setLightboxControls(false);
+}
+
+function closeLightboxOnBg(e) {
+  if (e.target === document.getElementById('lightbox')) closeLightbox();
+}
+
+function lightboxNav(dir) {
+  lbIndex = (lbIndex + dir + lightboxImages.length) % lightboxImages.length;
+  updateLightbox();
+}
+
+function updateLightbox() {
+  const img = document.getElementById('lightboxImg');
+  img.style.opacity = '0';
+  setTimeout(() => {
+    img.src = lightboxImages[lbIndex].src;
+    img.onload = () => { img.style.opacity = '1'; };
+    document.getElementById('lightboxCaption').textContent = lightboxImages[lbIndex].caption;
+    document.getElementById('lightboxCounter').textContent = (lbIndex + 1) + ' / ' + lightboxImages.length;
+  }, 150);
+}
+
+document.addEventListener('keydown', e => {
+  const lb = document.getElementById('lightbox');
+  if (!lb.classList.contains('active')) return;
+  if (e.key === 'ArrowLeft') lightboxNav(-1);
+  if (e.key === 'ArrowRight') lightboxNav(1);
+  if (e.key === 'Escape') closeLightbox();
+});
+
+// ─── COTIZADOR ───
+const COT_BASE = { boda: 28, corporativo: 22, quinceanero: 25, coctel: 18 };
+let cotTipo = 'boda', cotDia = 'semana';
+
+function setCotTipo(btn) {
+  document.querySelectorAll('#cot-tipo .cot-option').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  cotTipo = btn.dataset.tipo;
+  calcCotizador();
+}
+function setCotDia(btn) {
+  document.querySelectorAll('#cot-dia .cot-option').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  cotDia = btn.dataset.dia;
+  calcCotizador();
+}
+
+function fmt(n) { return 'S/ ' + Math.round(n).toLocaleString('es-PE'); }
+
+function calcCotizador() {
+  const pax = parseInt(document.getElementById('cot-pax').value);
+  document.getElementById('cot-pax-val').textContent = pax + ' personas';
+
+  let base = COT_BASE[cotTipo] * pax;
+  if (cotDia === 'finde') base *= 1.2;
+
+  const catering = document.getElementById('cot-catering').checked;
+  const deco     = document.getElementById('cot-deco').checked;
+  const dj       = document.getElementById('cot-dj').checked;
+  const foto     = document.getElementById('cot-foto').checked;
+
+  const cateringAmt = catering ? 45 * pax : 0;
+  const decoAmt     = deco ? 800 : 0;
+  const djAmt       = dj ? 600 : 0;
+  const fotoAmt     = foto ? 900 : 0;
+
+  const sub = base + cateringAmt + decoAmt + djAmt + fotoAmt;
+  const igv = sub * 0.18;
+  const total = sub + igv;
+
+  document.getElementById('cr-base').textContent = fmt(base);
+  document.getElementById('cr-sub').textContent  = fmt(sub);
+  document.getElementById('cr-igv').textContent  = fmt(igv);
+  document.getElementById('cr-total').textContent = fmt(total);
+
+  const toggleRow = (rowId, valId, show, val) => {
+    document.getElementById(rowId).style.display = show ? 'flex' : 'none';
+    if (valId) document.getElementById(valId).textContent = fmt(val);
+  };
+  toggleRow('cr-catering-row', 'cr-catering', catering, cateringAmt);
+  toggleRow('cr-deco-row', null, deco, 0);
+  toggleRow('cr-dj-row', null, dj, 0);
+  toggleRow('cr-foto-row', null, foto, 0);
+}
+
+function cotizadorCTA() {
+  const pax = document.getElementById('cot-pax').value;
+  const tipo = document.querySelector('#cot-tipo .cot-option.active').textContent;
+  const dia  = document.querySelector('#cot-dia .cot-option.active').textContent;
+  const total = document.getElementById('cr-total').textContent;
+
+  // Pre-fill form
+  const msgEl = document.querySelector('.form-textarea');
+  if (msgEl) msgEl.value = `Tipo de evento: ${tipo}\nNúmero de personas: ${pax}\nDía: ${dia}\nPresupuesto estimado: ${total} (con IGV)\n\nServicios adicionales de interés: ${
+    ['Catering','Decoración','DJ','Fotógrafo'].filter((_,i) =>
+      [document.getElementById('cot-catering'), document.getElementById('cot-deco'),
+       document.getElementById('cot-dj'), document.getElementById('cot-foto')][i].checked
+    ).join(', ') || 'Ninguno'
+  }`;
+
+  // Select tipo in dropdown
+  const sel = document.querySelector('.form-select');
+  if (sel) {
+    const map = { 'Boda':'boda','Corporativo':'corporativo','Quinceañero':'quinceanero','Cóctel':'coctel' };
+    [...sel.options].forEach(o => { if (o.value === map[tipo]) sel.value = o.value; });
+  }
+
+  const top = document.getElementById('contacto').getBoundingClientRect().top + window.pageYOffset - 80;
+  window.scrollTo({ top, behavior: 'smooth' });
+}
+
+function preseleccionarPaquete(nombre) {
+  const msgEl = document.querySelector('.form-textarea');
+  if (msgEl) msgEl.value = `Me interesa el paquete: ${nombre}\n\n`;
+  const top = document.getElementById('contacto').getBoundingClientRect().top + window.pageYOffset - 80;
+  window.scrollTo({ top, behavior: 'smooth' });
+}
+
+// init cotizador
+document.addEventListener('DOMContentLoaded', calcCotizador);
+
+// ─── SMOOTH SCROLL nav links ───
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+  link.addEventListener('click', e => {
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      const top = target.getBoundingClientRect().top + window.pageYOffset - 80;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
+  });
+});
+
+// ─── IMPROVED FORM ───
+function handleSubmit(e) {
+  e.preventDefault();
+  const btn = document.getElementById('submitBtn');
+  const success = document.getElementById('formSuccess');
+  const summary = document.getElementById('formSummary');
+  const form = e.target;
+
+  // Build summary
+  const nombre = form.querySelector('input[type="text"]')?.value || '';
+  const email  = form.querySelector('input[type="email"]')?.value || '';
+  const tel    = form.querySelector('input[type="tel"]')?.value || '';
+  const selects = form.querySelectorAll('select');
+  const tipo   = selects[0]?.value || '';
+  const pax    = selects[1]?.value || '';
+  const fecha  = form.querySelector('input[type="date"]')?.value || '';
+  if (summary) {
+    summary.innerHTML = `
+      <strong style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--noir);display:block;margin-bottom:12px">Resumen de tu consulta</strong>
+      <div>👤 <strong>Nombre:</strong> ${nombre}</div>
+      <div>📧 <strong>Email:</strong> ${email}</div>
+      <div>📱 <strong>Teléfono:</strong> ${tel}</div>
+      <div>🎉 <strong>Tipo de evento:</strong> ${tipo}</div>
+      <div>👥 <strong>Personas:</strong> ${pax}</div>
+      <div>📅 <strong>Fecha:</strong> ${fecha}</div>
+    `;
+  }
+
+  btn.textContent = 'Enviando...';
+  btn.disabled = true;
+  btn.style.opacity = '.6';
+  setTimeout(() => {
+    btn.style.display = 'none';
+    if (success) success.style.display = 'block';
+    form.reset();
+    setTimeout(() => {
+      if (success) success.style.display = 'none';
+      btn.style.display = 'block';
+      btn.style.opacity = '1';
+      btn.textContent = 'Enviar consulta';
+      btn.disabled = false;
+    }, 8000);
+  }, 1200);
+}
+
+// init — hide controls on load
+document.addEventListener('DOMContentLoaded', () => setLightboxControls(false));
+</script>
+
+<!-- WHATSAPP FLOAT -->
+<a class="wa-float" href="https://wa.me/51999999999?text=Hola%2C%20me%20interesa%20conocer%20m%C3%A1s%20sobre%20el%20local%20para%20mi%20evento" target="_blank" rel="noopener" aria-label="Contactar por WhatsApp">
+  <span class="wa-tooltip">Escríbenos por WhatsApp</span>
+  <svg width="30" height="30" viewBox="0 0 30 30" fill="white">
+    <path d="M15 2C7.82 2 2 7.82 2 15c0 2.28.6 4.42 1.65 6.28L2 28l6.87-1.6A13 13 0 0015 28c7.18 0 13-5.82 13-13S22.18 2 15 2zm6.6 18.4c-.28.78-1.62 1.5-2.22 1.56-.57.06-1.1.26-3.72-.78-3.13-1.24-5.14-4.42-5.3-4.63-.14-.2-1.18-1.57-1.18-3s.74-2.13 1.02-2.43c.26-.28.58-.35.77-.35h.56c.18 0 .43-.07.67.51.26.62.88 2.15.96 2.3.08.16.13.34.03.54-.1.2-.15.32-.3.5-.15.18-.32.4-.45.54-.15.15-.3.32-.13.62.17.3.77 1.28 1.66 2.07 1.14 1.02 2.1 1.33 2.4 1.48.3.15.47.13.65-.08.17-.2.74-.87.94-1.17.2-.3.4-.25.67-.15.27.1 1.7.8 2 .95.3.15.5.22.57.34.07.12.07.7-.2 1.48z"/>
+  </svg>
+</a>
+
+<!-- LIGHTBOX -->
+<div class="lightbox-overlay" id="lightbox" onclick="closeLightboxOnBg(event)">
+  <div class="lightbox-img-wrap">
+    <img id="lightboxImg" src="uploads/1.avif" alt="">
+    <div class="lightbox-caption" id="lightboxCaption"></div>
+  </div>
+</div>
+<button class="lightbox-btn lightbox-prev" onclick="lightboxNav(-1)" aria-label="Anterior">&#8592;</button>
+<button class="lightbox-btn lightbox-next" onclick="lightboxNav(1)" aria-label="Siguiente">&#8594;</button>
+<button class="lightbox-close" onclick="closeLightbox()" aria-label="Cerrar">&#10005;</button>
+<div class="lightbox-counter" id="lightboxCounter"></div>
+
+</body>
+</html>
